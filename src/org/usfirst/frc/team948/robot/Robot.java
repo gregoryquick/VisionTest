@@ -5,10 +5,16 @@ import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
+
+import java.util.ArrayList;
+
+import org.opencv.core.*;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.imgproc.Moments;
 import org.usfirst.frc.team948.robot.WebCamPipeVid;
 
 /**
@@ -40,5 +46,17 @@ public class Robot extends IterativeRobot {
 		});
 		visionThread.setDaemon(true);
 		visionThread.start();
+	}
+	
+	public MatOfPoint LargestCont(ArrayList<MatOfPoint> input){
+		int AM = 0;
+		MatOfPoint output = null;
+		for(MatOfPoint a : input){
+			if(a.size().area() < AM)
+				continue;
+			output = a;
+		}
+		Moments outputMom = null;
+		return output;
 	}
 }
