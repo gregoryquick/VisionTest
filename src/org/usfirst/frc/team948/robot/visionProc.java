@@ -54,15 +54,15 @@ public class visionProc {
 	}
 	
 	public ArrayDeque<double[]> getObjects() throws InterruptedException{
-		pause(20);
+		pause(2);
 		synchronized(objects){
 			return objects;
 		}
 	}
 	
-	public double[] waitedObjectAverage() throws InterruptedException{ 
+	public double[] weightedObjectAverage() throws InterruptedException{ 
 		ArrayDeque<double[]> temp;
-		pause(20);
+		pause(2);
 		synchronized(objects){
 			temp = objects.clone();
 		}
@@ -87,7 +87,7 @@ public class visionProc {
 		
 	public double[] objectAverage() throws InterruptedException{
 		ArrayDeque<double[]> temp;
-		pause(20);
+		pause(2);
 		synchronized(objects){
 			temp = objects.clone();
 		}
