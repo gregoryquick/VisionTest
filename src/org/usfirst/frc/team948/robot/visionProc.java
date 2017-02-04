@@ -60,47 +60,53 @@ public class visionProc {
 		}
 	}
 	
-	public double[] waitedObjectAverage(){
+	public double[] waitedObjectAverage() throws InterruptedException{ 
+		ArrayDeque<double[]> temp;
+		pause(20);
 		synchronized(objects){
-			if(objects.size() != 0){
-				double[] a = {0,0,0};
-				double number = (double) objects.size();
-				while(objects.size() > 0){
-					double[] f = objects.pollFirst();
-					a[0] += f[0]*f[2];
-					a[1] +=	f[1]*f[2];
-					a[2] += f[2];
-				}
-				a[0] /= number*a[2];
-				a[1] /= number*a[2];
-				a[2] /= number;
-				return a;
+			temp = objects.clone();
+		}
+		if(temp.size() != 0){
+			double[] a = {0,0,0};
+			double number = (double) temp.size();
+			while(temp.size() > 0){
+				double[] f = temp.pollFirst();
+				a[0] += f[0]*f[2];
+				a[1] +=	f[1]*f[2];
+				a[2] += f[2];
 			}
-			else{
-				return null;
-			}
+			a[0] /= number*a[2];
+			a[1] /= number*a[2];
+			a[2] /= number;
+			return a;
+		}
+		else{
+			return null;
 		}
 	}
 		
-	public double[] objectAverage(){
+	public double[] objectAverage() throws InterruptedException{
+		ArrayDeque<double[]> temp;
+		pause(20);
 		synchronized(objects){
-			if(objects.size() != 0){
-				double[] a = {0,0,0};
-				double number = (double) objects.size();
-				while(objects.size() > 0){
-					double[] f = objects.pollFirst();
-					a[0] += f[0];
-					a[1] +=	f[1];
-					a[2] += f[2];
-				}
-				a[0] /= number;
-				a[1] /= number;
-				a[2] /= number;
-				return a;
+			temp = objects.clone();
+		}
+		if(temp.size() != 0){
+			double[] a = {0,0,0};
+			double number = (double) temp.size();
+			while(temp.size() > 0){
+				double[] f = temp.pollFirst();
+				a[0] += f[0];
+				a[1] +=	f[1];
+				a[2] += f[2];
 			}
-			else{
-				return null;
-			}
+			a[0] /= number;
+			a[1] /= number;
+			a[2] /= number;
+			return a;
+		}
+		else{
+			return null;
 		}
 	}
 	
