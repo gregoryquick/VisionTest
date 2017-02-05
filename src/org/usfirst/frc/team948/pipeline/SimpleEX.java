@@ -39,9 +39,9 @@ public class SimpleEX {
 	public void process(Mat source0) {
 		// Step HSV_Threshold0:
 		Mat hsvThresholdInput = source0;
-		double[] hsvThresholdHue = {53.95683247408421, 70.44368210099256};
-		double[] hsvThresholdSaturation = {79.47823560083013, 251.92428095323072};
-		double[] hsvThresholdValue = {123.8309325181323, 255.0};
+		double[] hsvThresholdHue = {54.0, 110.0};
+		double[] hsvThresholdSaturation = {159.0, 255.0};
+		double[] hsvThresholdValue = {156.0, 255.0};
 		hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, hsvThresholdOutput);
 
 		// Step Find_Contours0:

@@ -1,8 +1,15 @@
 package org.usfirst.frc.team948.robot;
 
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import org.opencv.core.Mat;
+import org.usfirst.frc.team948.pipeline.SimpleEX;
 import org.usfirst.frc.team948.robot.visionProc;
 
 /**
@@ -17,29 +24,15 @@ public class Robot extends IterativeRobot {
 	public final double tickDistance = 30;
 	@Override
 	public void robotInit() {
-		clock.start();
+		clock.start();;
+		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+		camera.setExposureManual(-20);
 		proccesor = new visionProc();
-		double[] input = {(Double) null,(Double) null,(Double) null};
-		try {
-			input = proccesor.objectAverage();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		SmartDashboard.putNumber("averageX", input[0]);
-		SmartDashboard.putNumber("averageY", input[1]);
-		SmartDashboard.putNumber("averageArea", input[2]);
-		}
+	}
 	
 	public void loop(double prevTime){
 		while(prevTime+tickDistance <= clock.get()){continue;};
-		double[] input = {(Double) null,(Double) null,(Double) null};
-		try {
-			input = proccesor.objectAverage();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		SmartDashboard.putNumber("averageX", input[0]);
-		SmartDashboard.putNumber("averageY", input[1]);
-		SmartDashboard.putNumber("averageArea", input[2]);
+
+		loop(clock.get());
 	}
 }
