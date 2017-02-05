@@ -2,6 +2,7 @@ package org.usfirst.frc.team948.robot;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -17,9 +18,9 @@ import edu.wpi.first.wpilibj.CameraServer;
 
 public class visionProc {
 	Thread processingThread;
-	ArrayDeque<double[]> objects;
+	ConcurrentLinkedDeque<ArrayDeque<double[]>> objects;
 	public visionProc(){
-		objects = new ArrayDeque<double[]>();
+		objects = new ConcurrentLinkedDeque<ArrayDeque<double[]>>();
 		processingThread = new Thread(() -> {
 			SimpleEX pipeLine = new SimpleEX();
 			CvSink cvSink = CameraServer.getInstance().getVideo();
@@ -48,89 +49,10 @@ public class visionProc {
 							new Scalar(255, 255, 255), 1);
 				}
 				out.putFrame(mat);
-				setObjects(output);
+				objects.addFirst(output);
 			}
 		});
 		processingThread.setDaemon(true);
 		processingThread.start();
-	}
-	
-	public void setObjects(ArrayDeque<double[]> input){
-		synchronized(objects){
-			objects = new ArrayDeque<double[]>();
-			while(input.size() > 0){
-				double[] content = input.pollLast();
-				objects.offerFirst(content);
-			}
-		}
-	}
-	
-	public ArrayDeque<double[]> getObjects() throws InterruptedException{
-		pause(2);
-		synchronized(objects){
-			return objects;
-		}
-	}
-	
-	public double[] weightedObjectAverage() throws InterruptedException{ 
-		ArrayDeque<double[]> temp;
-		pause(2);
-		synchronized(objects){
-			temp = objects.clone();
-		}
-		if(temp.size() != 0){
-			double[] a = {0,0,0};
-			double number = (double) temp.size();
-			while(temp.size() > 0){
-				double[] f = temp.pollFirst();
-				a[0] += f[0]*f[2];
-				a[1] +=	f[1]*f[2];
-				a[2] += f[2];
-			}
-			a[0] /= number*a[2];
-			a[1] /= number*a[2];
-			a[2] /= number;
-			return a;
-		}
-		else{
-			return null;
-		}
-	}
-		
-	public double[] objectAverage() throws InterruptedException{
-		ArrayDeque<double[]> temp;
-		pause(2);
-		synchronized(objects){
-			temp = objects.clone();
-		}
-		if(temp.size() != 0){
-			double[] a = {0,0,0};
-			double number = (double) temp.size();
-			while(temp.size() > 0){
-				double[] f = temp.pollFirst();
-				a[0] += f[0];
-				a[1] +=	f[1];
-				a[2] += f[2];
-			}
-			a[0] /= number;
-			a[1] /= number;
-			a[2] /= number;
-			return a;
-		}
-		else{
-			return null;
-		}
-	}
-	
-	public void pause() throws InterruptedException{
-		processingThread.wait();
-	}
-	
-	public void pause(long time) throws InterruptedException{
-		processingThread.sleep(time);
-	}
-	
-	public void unpause(){
-		notifyAll();
 	}
 }
