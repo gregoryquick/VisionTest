@@ -17,6 +17,8 @@ import edu.wpi.cscore.CvSource;
 import edu.wpi.first.wpilibj.CameraServer;
 
 public class visionProc {
+	//Real distances are in inches
+	
 	//<To set later>
 	public static final double initialDistance = 1;
 	public static final double initialHeight = 1;
