@@ -77,8 +77,8 @@ public class visionProc {
 	
 	public double rectDistance(Rect in){
 		double H = in.height;
-		//Very likely that the sqrt should not be here
-		return Math.sqrt(initialHeight/H)*initialDistance;
+//		return Math.sqrt(initialHeight/H)*initialDistance;
+		return (initialHeight*initialDistance)/H;
 	}
 	
 	public double getCenterDistance(MatOfPoint in, double theta){
