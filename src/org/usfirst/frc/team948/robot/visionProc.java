@@ -17,6 +17,10 @@ import edu.wpi.cscore.CvSource;
 import edu.wpi.first.wpilibj.CameraServer;
 
 public class visionProc {
+	//<To set later>
+	public static final double initialDistance = 1;
+	public static final double initialHeight = 1;
+	//</To set later>
 	Thread processingThread;
 	ConcurrentLinkedDeque<ArrayDeque<double[]>> objects;
 	public visionProc(){
@@ -44,6 +48,11 @@ public class visionProc {
 					Rect temp1 = Imgproc.boundingRect(temp0);
 					properties[0] = (temp1.tl().x +temp1.br().x)/2;
 					properties[1] = (temp1.tl().y +temp1.br().y)/2;
+					//Extra processing that is not currently ejected from the tread
+					if(Thread.interrupted()){
+						double theta = getThetaSingleTape(temp0);
+						
+					}
 					output.offerFirst(properties);
 					Imgproc.rectangle(mat, temp1.br(), temp1.tl(),
 							new Scalar(255, 255, 255), 1);
@@ -54,5 +63,39 @@ public class visionProc {
 		});
 		processingThread.setDaemon(true);
 		processingThread.start();
+	}
+	
+	public double getThetaSingleTape(MatOfPoint in){
+		Rect fitted = Imgproc.boundingRect(in);
+		double A = in.size().area();
+		double W = fitted.width;
+		double H = fitted.height;
+		double int1 = ((H*W)/A)-1;
+		double theta =Math.atan((int1*rectDistance(fitted))/W);
+		return theta;
+	}
+	
+	public double rectDistance(Rect in){
+		double H = in.height;
+		//Very likely that the sqrt should not be here
+		return Math.sqrt(initialHeight/H)*initialDistance;
+	}
+	
+	public double getCenterDistance(MatOfPoint in, double theta){
+		Rect fitted = Imgproc.boundingRect(in);
+		double closestDistance = rectDistance(fitted);
+		return closestDistance + Math.sin(theta);
+	}
+	
+	public double getHeadingOffeset(MatOfPoint in, double theta){
+		Rect fitted = Imgproc.boundingRect(in);
+		double H = fitted.height;
+		double W = fitted.width;
+		double x = (fitted.tl().x+fitted.br().x)/2;
+//		double y = (fitted.tl().y+fitted.br().y)/2;
+		double pixelsToInchs = Math.sqrt((H*W)/(10*Math.cos(theta)));
+		double epsilon = (640/2) - x;
+		double gamma = Math.atan((pixelsToInchs*epsilon)/rectDistance(fitted));
+		return gamma;
 	}
 }
