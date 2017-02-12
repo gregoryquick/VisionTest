@@ -15,13 +15,15 @@ import org.usfirst.frc.team948.pipeline.SimpleEX;
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class visionProc {
 	//Real distances are in inches
 	
 	//<To set later>
-	public static final double initialDistance = 38.0;
-	public static final double initialHeight = 23.0;
+	public static final double initialDistance = 30.0;
+	public static final double initialHeight = 28.0;
+	public static final double initialWidth = 10.0;
 	//</To set later>
 	Thread processingThread;
 	ConcurrentLinkedDeque<ArrayDeque<double[]>> objects;
@@ -43,7 +45,7 @@ public class visionProc {
 				pipeLine.process(mat);
 				ArrayList<MatOfPoint> cameraIn = pipeLine.findContoursOutput();
 				int cont = cameraIn.size();
-				double[] properties = new double[3];
+				double[] properties = new double[5];
 				int k = 0;
 				for(int i = 0; i < cont;i++){
 					//double[] properties = new double[3];
@@ -56,22 +58,22 @@ public class visionProc {
 							properties[2] = temp0.size().area();
 							properties[1] = temp1.height;
 							properties[0] = temp1.width;
+							properties[3] = (temp1.tl().x + temp1.br().x)/2;
+							properties[4] = (temp1.tl().y + temp1.br().y)/2;
 						}
 					}else{
 						k = i;
 						properties[2] = temp0.size().area();
 						properties[1] = temp1.height;
 						properties[0] = temp1.width;
+						properties[3] = (temp1.tl().x + temp1.br().x)/2;
+						properties[4] = (temp1.tl().y + temp1.br().y)/2;
 					}
 //					properties[0] = (temp1.tl().x +temp1.br().x)/2;
 					//properties[0] = temp1.width;
 //					properties[1] = (temp1.tl().y +temp1.br().y)/2;
 					//properties[1] = temp1.height;
 					//Extra processing that is not currently ejected from the tread
-					if(Thread.interrupted()){
-						double theta = getThetaSingleTape(temp0);
-						
-					}
 					//output.offerFirst(properties);
 //					Imgproc.rectangle(mat, temp1.br(), temp1.tl(),
 //							new Scalar(255, 255, 255), 1);
@@ -89,13 +91,35 @@ public class visionProc {
 		processingThread.start();
 	}
 	
-	public double getThetaSingleTape(MatOfPoint in){
-		Rect fitted = Imgproc.boundingRect(in);
-		double A = in.size().area();
-		double W = fitted.width;
-		double H = fitted.height;
-		double int1 = ((H*W)/A)-1;
-		double theta =Math.atan((int1*rectDistance(fitted))/W);
+//	public double getThetaSingleTape(MatOfPoint in){
+//		Rect fitted = Imgproc.boundingRect(in);
+//		double A = in.size().area();
+//		double W = fitted.width;
+//		double H = fitted.height;
+//		double int1 = ((H*W)/A)-1;
+//		double theta =Math.atan((int1*rectDistance(fitted))/W);
+//		return theta;
+//	}
+//	
+//	public double getThetaSingleTape(double[] in){
+//		double A = in[2];
+//		double W = in[0];
+//		double H = in[1];
+//		double int1 = ((H*W)/A)-1;
+//		double theta =Math.atan((int1*rectDistance(in))/W);
+//		return theta;
+//	}
+	
+	public double getThetaSingleTape(double[] in){
+		SmartDashboard.putBoolean("ThetaTest1", true);
+		double W = in[0];
+		double H = in[1];
+		double distance = rectDistance(in);
+		SmartDashboard.putBoolean("ThetaTest2", true);
+		double uW = (initialDistance/distance)*initialWidth;
+		SmartDashboard.putNumber("ThetaTest3", uW);
+		double theta = Math.acos(W/uW);
+		SmartDashboard.putNumber("ThetaTest4", theta);
 		return theta;
 	}
 	
@@ -105,9 +129,20 @@ public class visionProc {
 		return (initialHeight*initialDistance)/H;
 	}
 	
+	public double rectDistance(double[] in){
+		double H = in[1];
+//		return Math.sqrt(initialHeight/H)*initialDistance;
+		return (initialHeight*initialDistance)/H;
+	}
+	
 	public double getCenterDistance(MatOfPoint in, double theta){
 		Rect fitted = Imgproc.boundingRect(in);
 		double closestDistance = rectDistance(fitted);
+		return closestDistance + Math.sin(theta);
+	}
+	
+	public double getCenterDistance(double[] in, double theta){
+		double closestDistance = rectDistance(in);
 		return closestDistance + Math.sin(theta);
 	}
 	
@@ -120,6 +155,17 @@ public class visionProc {
 		double pixelsToInchs = Math.sqrt((H*W)/(10*Math.cos(theta)));
 		double epsilon = (640/2) - x;
 		double gamma = Math.atan((pixelsToInchs*epsilon)/rectDistance(fitted));
+		return gamma;
+	}
+	
+	public double getHeadingOffeset(double[] in, double theta){
+		double H = in[1];
+		double W = in[0];
+		double x = in[3];
+//		double y = in[4];
+		double pixelsToInchs = Math.sqrt((H*W)/(10*Math.cos(theta)));
+		double epsilon = (640/2) - x;
+		double gamma = Math.atan((pixelsToInchs*epsilon)/rectDistance(in));
 		return gamma;
 	}
 }
