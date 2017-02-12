@@ -28,7 +28,7 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		clock.start();
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-		camera.setExposureManual(-20);
+		camera.setExposureManual(-11);
 		proccesor = new visionProc();
 		SmartDashboard.putNumber("Time", clock.get());
 	}

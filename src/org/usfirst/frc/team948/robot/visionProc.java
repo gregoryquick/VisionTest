@@ -20,8 +20,8 @@ public class visionProc {
 	//Real distances are in inches
 	
 	//<To set later>
-	public static final double initialDistance = 1;
-	public static final double initialHeight = 1;
+	public static final double initialDistance = 38.0;
+	public static final double initialHeight = 23.0;
 	//</To set later>
 	Thread processingThread;
 	ConcurrentLinkedDeque<ArrayDeque<double[]>> objects;
@@ -76,12 +76,13 @@ public class visionProc {
 //					Imgproc.rectangle(mat, temp1.br(), temp1.tl(),
 //							new Scalar(255, 255, 255), 1);
 				}
-				Rect j = Imgproc.boundingRect(cameraIn.get(k));
-				Imgproc.rectangle(mat, j.br(), j.tl(),
-						new Scalar(255, 255, 255), 1);
-				output.offerFirst(properties);
-				out.putFrame(mat);
+				if(cont > 0){
+					Rect j = Imgproc.boundingRect(cameraIn.get(k));
+					Imgproc.rectangle(mat, j.br(), j.tl(), new Scalar(255, 255, 255), 1);
+					output.offerFirst(properties);
+				}
 				objects.addFirst(output);
+				out.putFrame(mat);
 			}
 		});
 		processingThread.setDaemon(true);
