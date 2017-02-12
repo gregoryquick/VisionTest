@@ -39,8 +39,8 @@ public class Robot extends IterativeRobot {
 			ArrayDeque<double[]> data = proccesor.objects.peekFirst();
 			for(int i = 0; data.size() > 0;i++){
 				double[] temp = data.pollLast();
-				SmartDashboard.putNumber("Object" + i + "X", temp[0]);
-				SmartDashboard.putNumber("Object" + i + "Y", temp[1]);
+				SmartDashboard.putNumber("Object" + i + "Width", temp[0]);
+				SmartDashboard.putNumber("Object" + i + "Height", temp[1]);
 				SmartDashboard.putNumber("Object" + i + "Area", temp[2]);
 			}
 		}

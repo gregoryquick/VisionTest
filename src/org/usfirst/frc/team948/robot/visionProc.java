@@ -43,22 +43,43 @@ public class visionProc {
 				pipeLine.process(mat);
 				ArrayList<MatOfPoint> cameraIn = pipeLine.findContoursOutput();
 				int cont = cameraIn.size();
+				double[] properties = new double[3];
+				int k = 0;
 				for(int i = 0; i < cont;i++){
-					double[] properties = new double[3];
+					//double[] properties = new double[3];
 					MatOfPoint temp0 = cameraIn.get(i);
-					properties[2] = temp0.size().area();
+//					properties[2] = temp0.size().area();
 					Rect temp1 = Imgproc.boundingRect(temp0);
-					properties[0] = (temp1.tl().x +temp1.br().x)/2;
-					properties[1] = (temp1.tl().y +temp1.br().y)/2;
+					if(i != 0){
+						if(temp0.size().area() > properties[2]){
+							k= i;
+							properties[2] = temp0.size().area();
+							properties[1] = temp1.height;
+							properties[0] = temp1.width;
+						}
+					}else{
+						k = i;
+						properties[2] = temp0.size().area();
+						properties[1] = temp1.height;
+						properties[0] = temp1.width;
+					}
+//					properties[0] = (temp1.tl().x +temp1.br().x)/2;
+					//properties[0] = temp1.width;
+//					properties[1] = (temp1.tl().y +temp1.br().y)/2;
+					//properties[1] = temp1.height;
 					//Extra processing that is not currently ejected from the tread
 					if(Thread.interrupted()){
 						double theta = getThetaSingleTape(temp0);
 						
 					}
-					output.offerFirst(properties);
-					Imgproc.rectangle(mat, temp1.br(), temp1.tl(),
-							new Scalar(255, 255, 255), 1);
+					//output.offerFirst(properties);
+//					Imgproc.rectangle(mat, temp1.br(), temp1.tl(),
+//							new Scalar(255, 255, 255), 1);
 				}
+				Rect j = Imgproc.boundingRect(cameraIn.get(k));
+				Imgproc.rectangle(mat, j.br(), j.tl(),
+						new Scalar(255, 255, 255), 1);
+				output.offerFirst(properties);
 				out.putFrame(mat);
 				objects.addFirst(output);
 			}
