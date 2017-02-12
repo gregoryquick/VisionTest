@@ -53,7 +53,7 @@ public class visionProc {
 //					properties[2] = temp0.size().area();
 					Rect temp1 = Imgproc.boundingRect(temp0);
 					if(i != 0){
-						if(temp0.size().area() > properties[2]){
+						if(temp1.area() > properties[0]*properties[1]){
 							k= i;
 							properties[2] = temp0.size().area();
 							properties[1] = temp1.height;
