@@ -35,8 +35,12 @@ public class Robot extends IterativeRobot {
 	public void disabledPeriodic() {
 		SmartDashboard.putNumber("Time", clock.get());
 		if(!proccesor.objects.isEmpty()){
-			SmartDashboard.putBoolean("NoDataOut", false);
 			ArrayDeque<double[]> data = proccesor.objects.peekFirst();
+			if(data.size() > 0){
+				SmartDashboard.putBoolean("NoDataOut", false);
+			}else{
+				SmartDashboard.putBoolean("NoDataOut", true);
+			}
 			for(int i = 0; data.size() > 0;i++){
 				double[] temp = data.pollLast();
 				SmartDashboard.putNumber("Object" + i + "Width", temp[0]);
