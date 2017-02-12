@@ -41,18 +41,20 @@ public class Robot extends IterativeRobot {
 			}else{
 				SmartDashboard.putBoolean("NoDataOut", true);
 			}
+			SmartDashboard.putNumber("DataZise", data.size());
 			for(int i = 0; data.size() > 0;i++){
 				double[] temp = data.pollLast();
 				SmartDashboard.putNumber("Object" + i + "Width", temp[0]);
 				SmartDashboard.putNumber("Object" + i + "Height", temp[1]);
 				SmartDashboard.putNumber("Object" + i + "Area", temp[2]);
+				SmartDashboard.putNumber("Object" + i + "Size", temp[0]*temp[1]);
 				SmartDashboard.putNumber("Object" + i + "Theta", (proccesor.getThetaSingleTape(temp)*180)/Math.PI);
 				SmartDashboard.putNumber("Object" + i + "Distance", proccesor.getCenterDistance(temp, proccesor.getThetaSingleTape(temp)));
 				SmartDashboard.putNumber("Object" + i + "Gamma", (proccesor.getHeadingOffeset(temp, proccesor.getThetaSingleTape(temp))*180)/Math.PI);
 			}
 		}
 		else{
-			SmartDashboard.putBoolean("NoDataOut", true);
+//			SmartDashboard.putBoolean("NoDataOut", true);
 		}
 	}
 }
