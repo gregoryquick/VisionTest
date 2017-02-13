@@ -46,6 +46,8 @@ public class Robot extends IterativeRobot {
 				double[] temp = data.pollLast();
 				SmartDashboard.putNumber("Object" + i + "Width", temp[0]);
 				SmartDashboard.putNumber("Object" + i + "Height", temp[1]);
+				SmartDashboard.putNumber("Object" + i + "X", temp[3]);
+				SmartDashboard.putNumber("Object" + i + "Y", temp[4]);
 				SmartDashboard.putNumber("Object" + i + "Area", temp[2]);
 				SmartDashboard.putNumber("Object" + i + "Size", temp[0]*temp[1]);
 				SmartDashboard.putNumber("Object" + i + "Theta", (proccesor.getThetaSingleTape(temp)*180)/Math.PI);
@@ -54,7 +56,7 @@ public class Robot extends IterativeRobot {
 			}
 		}
 		else{
-//			SmartDashboard.putBoolean("NoDataOut", true);
+			SmartDashboard.putBoolean("NoDataOut", true);
 		}
 	}
 }

@@ -11,7 +11,7 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.usfirst.frc.team948.pipeline.SimpleEX;
-
+import org.usfirst.frc.team948.pipeline.HSimpleEX;
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.first.wpilibj.CameraServer;
@@ -31,7 +31,7 @@ public class visionProc {
 	public visionProc(){
 		objects = new ConcurrentLinkedDeque<ArrayDeque<double[]>>();
 		processingThread = new Thread(() -> {
-			SimpleEX pipeLine = new SimpleEX();
+			HSimpleEX pipeLine = new HSimpleEX();
 			CvSink cvSink = CameraServer.getInstance().getVideo();
 			CvSource out = CameraServer.getInstance().putVideo("Processed", 640, 480);
 			Mat mat = new Mat();
@@ -40,7 +40,7 @@ public class visionProc {
 			cvSink.grabFrame(mat);
 			while (!Thread.interrupted()) {
 				SmartDashboard.putNumber("Timer", timer.get());
-				if(timer.get() > 5){
+				if(timer.get() > 0.002){
 					if (cvSink.grabFrame(mat) == 0) {
 						// Send the output the error.
 						out.notifyError(cvSink.getError());
@@ -125,8 +125,9 @@ public class visionProc {
 		SmartDashboard.putBoolean("ThetaTest2", true);
 		double uW = (initialDistance/distance)*initialWidth;
 		SmartDashboard.putNumber("ThetaTest3", uW);
+		SmartDashboard.putNumber("ThetaTest4", W);
 		double theta = Math.acos(W/uW);
-		SmartDashboard.putNumber("ThetaTest4", theta);
+		SmartDashboard.putNumber("ThetaTest5", theta);
 		return theta;
 	}
 	
