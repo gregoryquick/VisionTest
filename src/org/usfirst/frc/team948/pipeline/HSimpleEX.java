@@ -23,7 +23,7 @@ import org.opencv.objdetect.*;
 *
 * @author GRIP
 */
-public class HSimpleEX {
+public class HSimpleEX implements Pipe {
 
 	//Outputs
 	private Mat hslThresholdOutput = new Mat();
