@@ -161,9 +161,8 @@ public class visionProc {
 		double W = fitted.width;
 		double x = (fitted.tl().x+fitted.br().x)/2;
 //		double y = (fitted.tl().y+fitted.br().y)/2;
-		double pixelsToInchs = Math.sqrt((H*W)/(10*Math.cos(theta)));
-		double epsilon = (640/2) - x;
-		double gamma = Math.atan((pixelsToInchs*epsilon)/rectDistance(fitted));
+		double epsilon = x - (640/2);
+		double gamma = Math.atan((2*epsilon)/(initialDistance*initialWidth));
 		return gamma;
 	}
 	
@@ -171,10 +170,9 @@ public class visionProc {
 		double H = in[1];
 		double W = in[0];
 		double x = in[3];
-//		double y = in[4];
-		double pixelsToInchs = Math.sqrt((H*W)/(10*Math.cos(theta)));
-		double epsilon = (640/2) - x;
-		double gamma = Math.atan((pixelsToInchs*epsilon)/rectDistance(in));
+//		double y = in[4];;
+		double epsilon = x - (640/2);
+		double gamma = Math.atan((2*epsilon)/(initialDistance*initialWidth));
 		return gamma;
 	}
 }
