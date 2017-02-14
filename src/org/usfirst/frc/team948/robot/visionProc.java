@@ -16,16 +16,17 @@ import org.usfirst.frc.team948.pipeline.Pipe;
 
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
+import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class visionProc {
 	//Real distances are in inches
-	public static final boolean bool = false;
-	public static final double initialDistance = bool ?  30.0 : 1;
-	public static final double initialHeight = bool ? 28.0 : 1;
-	public static final double initialWidth = bool ? 10.0 : 1;
+	public static final boolean bool = true;
+	public static final double initialDistance = bool ?  30.0 : 34.5;
+	public static final double initialHeight = bool ? 28.0 : 24.0;
+	public static final double initialWidth = bool ? 10.0 : 11.0;
 	Thread processingThread;
 	ConcurrentLinkedDeque<ArrayDeque<double[]>> objects;
 	public visionProc(){
