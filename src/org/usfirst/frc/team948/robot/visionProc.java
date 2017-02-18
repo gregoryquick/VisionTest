@@ -28,7 +28,7 @@ public class visionProc {
 	public static final double initialDistance = bool ?  32.6 : 34.5;
 	public static final double initialHeight = bool ? 26.0 : 24.0;
 	public static final double initialWidth = bool ? 10.5 : 11.0;
-	public static final double initialEpsilon = bool ? (39.5)-(640/2) : (0)-(640/2);
+	public static final double initialX = bool ? 39.5 : 0;
 	public static final double initialGamma = bool ? ((-5)*Math.PI)/180 : ((1)*Math.PI)/180;
 	Thread processingThread;
 	ConcurrentLinkedDeque<ArrayDeque<double[]>> objects;
@@ -107,25 +107,6 @@ public class visionProc {
 		processingThread.start();
 		return this;
 	}
-		
-//	public double getThetaSingleTape(double[] in){
-//		SmartDashboard.putBoolean("ThetaTest1", true);
-//		double W = in[0];
-//		double H = in[1];
-//		double distance = rectDistance(in);
-//		SmartDashboard.putBoolean("ThetaTest2", true);
-//		double uW = (initialDistance/distance)*initialWidth;
-//		SmartDashboard.putNumber("ThetaTest3", uW);
-//		SmartDashboard.putNumber("ThetaTest4", W);
-//		double theta = Math.acos(W/uW);
-//		SmartDashboard.putNumber("ThetaTest5", theta);
-//		return theta;
-//	}
-//	
-//	public double rectDistance(Rect in){
-//		double H = in.height;
-//		return (initialHeight*initialDistance)/H;
-//	}
 	
 	public double getThetaSingleTape(double[] in){
 		SmartDashboard.putBoolean("ThetaTest1", true);
@@ -145,38 +126,17 @@ public class visionProc {
 		return (initialHeight*initialDistance)/H;
 	}
 	
-//	public double getCenterDistance(MatOfPoint in, double theta){
-//		Rect fitted = Imgproc.boundingRect(in);
-//		double closestDistance = rectDistance(fitted);
-//		return closestDistance + Math.sin(theta);
-//	}
-	
 	public double getCenterDistance(double[] in, double theta){
 		double closestDistance = rectDistance(in);
 		double W = in[0];
 		return closestDistance + (Math.tan(theta)*W/2);
 	}
 	
-//	public double getHeadingOffeset(MatOfPoint in, double theta){
-//		Rect fitted = Imgproc.boundingRect(in);
-//		double H = fitted.height;
-//		double W = fitted.width;
-//		double x = (fitted.tl().x+fitted.br().x)/2;
-//		double epsilon = x - (640/2);
-//		double gamma = Math.atan((2*epsilon)/(initialDistance*initialWidth));
-//		return gamma;
-//	}
-	
-//	public double getHeadingOffeset(double[] in, double theta){
-//		double x = in[3];
-//		double epsilon = x - (640/2);
-//		double gamma = Math.atan((2*epsilon)/(initialDistance*initialWidth));
-//		return gamma;
-//	}
-	
 	public double getHeadingOffeset(double[] in, double theta){
 		double x = in[3];
-		double epsilon = x - (640/2);
+		double wF = in[5];
+		double epsilon = x - (wF/2);
+		double initialEpsilon = initialX - (wF/2);
 		double gamma = Math.atan((epsilon/initialEpsilon)*Math.tan(initialGamma));
 		return gamma;
 	}
