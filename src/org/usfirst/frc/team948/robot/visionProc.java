@@ -25,9 +25,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class visionProc {
 	//Real distances are in inches
 	public static final boolean bool = true;
-	public static final double initialDistance = bool ?  30.0 : 34.5;
-	public static final double initialHeight = bool ? 28.0 : 24.0;
-	public static final double initialWidth = bool ? 10.0 : 11.0;
+	public static final double initialDistance = bool ?  32.6 : 34.5;
+	public static final double initialHeight = bool ? 26.0 : 24.0;
+	public static final double initialWidth = bool ? 10.5 : 11.0;
+	public static final double initialEpsilon = bool ? (0)-(640/2) : (0)-(640/2);
+	public static final double initialGamma = bool ? ((1)*Math.PI)/180 : ((1)*Math.PI)/180;
 	Thread processingThread;
 	ConcurrentLinkedDeque<ArrayDeque<double[]>> objects;
 	public visionProc(){}
@@ -119,41 +121,48 @@ public class visionProc {
 		return theta;
 	}
 	
-	public double rectDistance(Rect in){
-		double H = in.height;
-		return (initialHeight*initialDistance)/H;
-	}
+//	public double rectDistance(Rect in){
+//		double H = in.height;
+//		return (initialHeight*initialDistance)/H;
+//	}
 	
 	public double rectDistance(double[] in){
 		double H = in[1];
 		return (initialHeight*initialDistance)/H;
 	}
 	
-	public double getCenterDistance(MatOfPoint in, double theta){
-		Rect fitted = Imgproc.boundingRect(in);
-		double closestDistance = rectDistance(fitted);
-		return closestDistance + Math.sin(theta);
-	}
+//	public double getCenterDistance(MatOfPoint in, double theta){
+//		Rect fitted = Imgproc.boundingRect(in);
+//		double closestDistance = rectDistance(fitted);
+//		return closestDistance + Math.sin(theta);
+//	}
 	
 	public double getCenterDistance(double[] in, double theta){
 		double closestDistance = rectDistance(in);
 		return closestDistance + Math.sin(theta);
 	}
 	
-	public double getHeadingOffeset(MatOfPoint in, double theta){
-		Rect fitted = Imgproc.boundingRect(in);
-		double H = fitted.height;
-		double W = fitted.width;
-		double x = (fitted.tl().x+fitted.br().x)/2;
-		double epsilon = x - (640/2);
-		double gamma = Math.atan((2*epsilon)/(initialDistance*initialWidth));
-		return gamma;
-	}
+//	public double getHeadingOffeset(MatOfPoint in, double theta){
+//		Rect fitted = Imgproc.boundingRect(in);
+//		double H = fitted.height;
+//		double W = fitted.width;
+//		double x = (fitted.tl().x+fitted.br().x)/2;
+//		double epsilon = x - (640/2);
+//		double gamma = Math.atan((2*epsilon)/(initialDistance*initialWidth));
+//		return gamma;
+//	}
+	
+//	public double getHeadingOffeset(double[] in, double theta){
+//		double x = in[3];
+//		double epsilon = x - (640/2);
+//		double gamma = Math.atan((2*epsilon)/(initialDistance*initialWidth));
+//		return gamma;
+//	}
 	
 	public double getHeadingOffeset(double[] in, double theta){
 		double x = in[3];
 		double epsilon = x - (640/2);
-		double gamma = Math.atan((2*epsilon)/(initialDistance*initialWidth));
+		double gamma = Math.atan((epsilon/initialEpsilon)*Math.tan(initialGamma));
 		return gamma;
 	}
 }
