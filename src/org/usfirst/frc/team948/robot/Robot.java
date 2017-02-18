@@ -53,7 +53,8 @@ public class Robot extends IterativeRobot {
 				SmartDashboard.putNumber("Object" + i + "Size", temp[0]*temp[1]);
 				SmartDashboard.putNumber("Object" + i + "Theta", (proccesor.getThetaSingleTape(temp)*180)/Math.PI);
 				SmartDashboard.putNumber("Object" + i + "Distance", proccesor.getCenterDistance(temp, proccesor.getThetaSingleTape(temp)));
-				SmartDashboard.putNumber("Object" + i + "Gamma", (proccesor.getHeadingOffeset(temp, proccesor.getThetaSingleTape(temp))*180)/Math.PI);
+				SmartDashboard.putNumber("Object" + i + "Gamma", (proccesor.getHeadingOffeset(temp,proccesor.getThetaSingleTape(temp))*180)/Math.PI);
+				SmartDashboard.putNumber("Object" + i + "Zeta", proccesor.simpleHeading(temp));
 			}
 		}
 		else{

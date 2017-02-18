@@ -28,8 +28,8 @@ public class visionProc {
 	public static final double initialDistance = bool ?  32.6 : 34.5;
 	public static final double initialHeight = bool ? 26.0 : 24.0;
 	public static final double initialWidth = bool ? 10.5 : 11.0;
-	public static final double initialEpsilon = bool ? (0)-(640/2) : (0)-(640/2);
-	public static final double initialGamma = bool ? ((1)*Math.PI)/180 : ((1)*Math.PI)/180;
+	public static final double initialEpsilon = bool ? (39.5)-(640/2) : (0)-(640/2);
+	public static final double initialGamma = bool ? ((-5)*Math.PI)/180 : ((1)*Math.PI)/180;
 	Thread processingThread;
 	ConcurrentLinkedDeque<ArrayDeque<double[]>> objects;
 	public visionProc(){}
@@ -57,7 +57,7 @@ public class visionProc {
 					pipeLine.process(mat);
 					ArrayList<MatOfPoint> cameraIn = pipeLine.findContoursOutput();
 					int cont = cameraIn.size();
-					double[] properties = new double[5];
+					double[] properties = new double[6];
 					int k = 0;
 					for(int i = 0; i < cont;i++){
 						MatOfPoint temp0 = cameraIn.get(i);
@@ -77,6 +77,7 @@ public class visionProc {
 							properties[0] = temp1.width;
 							properties[3] = (temp1.tl().x + temp1.br().x)/2;
 							properties[4] = (temp1.tl().y + temp1.br().y)/2;
+							properties[5] = mat.width();
 						}
 					}
 					if(cont > 0){
@@ -107,24 +108,37 @@ public class visionProc {
 		return this;
 	}
 		
+//	public double getThetaSingleTape(double[] in){
+//		SmartDashboard.putBoolean("ThetaTest1", true);
+//		double W = in[0];
+//		double H = in[1];
+//		double distance = rectDistance(in);
+//		SmartDashboard.putBoolean("ThetaTest2", true);
+//		double uW = (initialDistance/distance)*initialWidth;
+//		SmartDashboard.putNumber("ThetaTest3", uW);
+//		SmartDashboard.putNumber("ThetaTest4", W);
+//		double theta = Math.acos(W/uW);
+//		SmartDashboard.putNumber("ThetaTest5", theta);
+//		return theta;
+//	}
+//	
+//	public double rectDistance(Rect in){
+//		double H = in.height;
+//		return (initialHeight*initialDistance)/H;
+//	}
+	
 	public double getThetaSingleTape(double[] in){
 		SmartDashboard.putBoolean("ThetaTest1", true);
 		double W = in[0];
 		double H = in[1];
-		double distance = rectDistance(in);
 		SmartDashboard.putBoolean("ThetaTest2", true);
-		double uW = (initialDistance/distance)*initialWidth;
+		double uW = (H/initialHeight)*initialWidth;
 		SmartDashboard.putNumber("ThetaTest3", uW);
 		SmartDashboard.putNumber("ThetaTest4", W);
 		double theta = Math.acos(W/uW);
 		SmartDashboard.putNumber("ThetaTest5", theta);
 		return theta;
 	}
-	
-//	public double rectDistance(Rect in){
-//		double H = in.height;
-//		return (initialHeight*initialDistance)/H;
-//	}
 	
 	public double rectDistance(double[] in){
 		double H = in[1];
@@ -139,7 +153,8 @@ public class visionProc {
 	
 	public double getCenterDistance(double[] in, double theta){
 		double closestDistance = rectDistance(in);
-		return closestDistance + Math.sin(theta);
+		double W = in[0];
+		return closestDistance + (Math.tan(theta)*W/2);
 	}
 	
 //	public double getHeadingOffeset(MatOfPoint in, double theta){
@@ -164,5 +179,13 @@ public class visionProc {
 		double epsilon = x - (640/2);
 		double gamma = Math.atan((epsilon/initialEpsilon)*Math.tan(initialGamma));
 		return gamma;
+	}
+	
+	public double simpleHeading(double[] in){
+		double x = in[3];
+		double wF = in[5];
+		double epsilon = x - (wF/2);
+		double zeta = Math.abs(epsilon) > (20/640)*wF ? Math.copySign(1.0, epsilon) : 0;
+		return zeta;
 	}
 }
