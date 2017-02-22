@@ -6,146 +6,296 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
-import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
-import org.usfirst.frc.team948.pipeline.SimpleEX;
 import org.usfirst.frc.team948.pipeline.HSimpleEX;
 import org.usfirst.frc.team948.pipeline.Pipe;
+import org.usfirst.frc.team948.pipeline.SimpleEX;
 
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
-import edu.wpi.cscore.VideoSink;
-import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.Timer;
+//import edu.wpi.first.wpilibj.Timer;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class visionProc {
-	//Real distances are in inches
-	public static final boolean bool = true;
-	public static final double initialDistance = bool ?  32.6 : 34.5;
-	public static final double initialHeight = bool ? 26.0 : 24.0;
-	public static final double initialWidth = bool ? 10.5 : 11.0;
-	public static final double initialX = bool ? 39.5 : 0;
-	public static final double initialGamma = bool ? ((-5)*Math.PI)/180 : ((1)*Math.PI)/180;
+	private static final boolean bool = true;
+	private static final double initialDistance = bool ? 32.6 : 0;
+	private static final double initialHeight = bool ? 26.0 : 0;
+	private static final double initialWidth = bool ? 10.5 : 0;
+	private static final double initialX = bool ? 39.5 : 0;
+	private static final double initialGamma = bool ? ((-5.0)*Math.PI)/180.0 : ((0.0)*Math.PI)/180.0;
+	private threadOut gotten;
+	private visionField lastOut;
+	
+	private Timer proccessingTimer;
+	private CvSink cvSink;
+	private CvSource vidOut;
+	private Pipe pipeLine;
+	private Mat mat;
 	Thread processingThread;
-	ConcurrentLinkedDeque<ArrayDeque<double[]>> objects;
+	threadOut threadObjectData;
+	
 	public visionProc(){}
 	
 	public visionProc start(){
-		objects = new ConcurrentLinkedDeque<ArrayDeque<double[]>>();
-		processingThread = new Thread(() -> {
-			Pipe pipeLine = bool ? new SimpleEX() : new HSimpleEX();
-			CvSink cvSink = CameraServer.getInstance().getVideo();
-			CvSource out = CameraServer.getInstance().putVideo("Processed", 640, 480);
-			Mat mat = new Mat();
-			Timer timer = new Timer();
-			timer.start();
-			cvSink.grabFrame(mat);
-			while (!Thread.interrupted()) {
-				SmartDashboard.putNumber("Timer", timer.get());
-				if(timer.get() > 0.002){
-					if (cvSink.grabFrame(mat) == 0) {
-						SmartDashboard.putBoolean("frameError", true);
-						out.notifyError(cvSink.getError());
-						continue;
-					}
-					SmartDashboard.putBoolean("frameError", false);
-					ArrayDeque<double[]> output = new ArrayDeque<double[]>();;
+		gotten = new threadOut();
+		lastOut = new visionField();
+		threadObjectData = new threadOut();
+		cvSink = CameraServer.getInstance().getVideo();
+		vidOut = CameraServer.getInstance().putVideo("Processed", 640, 480);
+		mat = new Mat();
+		pipeLine = bool ? new SimpleEX() : new HSimpleEX();
+		proccessingTimer = new Timer();
+		proccessingTimer.schedule(new TimerTask(){
+			@Override
+			public void run(){
+				long start = System.currentTimeMillis();
+				if (cvSink.grabFrame(mat) == 0) {
+					vidOut.notifyError(cvSink.getError());
+				}else{
 					pipeLine.process(mat);
 					ArrayList<MatOfPoint> cameraIn = pipeLine.findContoursOutput();
 					int cont = cameraIn.size();
-					double[] properties = new double[6];
+					int kprime = 0;
 					int k = 0;
+					double secondMaxSize = 0;
+					double maxSize = 0;
 					for(int i = 0; i < cont;i++){
 						MatOfPoint temp0 = cameraIn.get(i);
 						Rect temp1 = Imgproc.boundingRect(temp0);
-						if(i != 0){
-							if(temp1.area() > properties[0]*properties[1]){
-								k= i;
-								properties[2] = temp0.size().area();
-								properties[1] = temp1.height;
-								properties[0] = temp1.width;
-								properties[3] = (temp1.tl().x + temp1.br().x)/2;
-								properties[4] = (temp1.tl().y + temp1.br().y)/2;
-							}
-						}else{
-							properties[2] = temp0.size().area();
-							properties[1] = temp1.height;
-							properties[0] = temp1.width;
-							properties[3] = (temp1.tl().x + temp1.br().x)/2;
-							properties[4] = (temp1.tl().y + temp1.br().y)/2;
-							properties[5] = mat.width();
+						if(temp1.height*temp1.width >= maxSize){
+							kprime = k;
+							secondMaxSize = maxSize;
+							k = i;
+							maxSize = temp1.height*temp1.width;
 						}
 					}
-					if(cont > 0){
-						Rect j = Imgproc.boundingRect(cameraIn.get(k));
+					if(maxSize > 0){
+						MatOfPoint l = cameraIn.get(k);
+						Rect j = Imgproc.boundingRect(l);
 						Imgproc.rectangle(mat, j.br(), j.tl(), new Scalar(255, 255, 255), 1);
-						output.offerFirst(properties);
+						threadOut temp = new threadOut();
+						boolean boool = false;
+						temp.hasData = true;
+						temp.area = l.size().area();
+						temp.rectWidth = j.width;
+						temp.rectHeight = j.height;
+						temp.x = (j.tl().x + j.br().x)/2;
+						temp.y = (j.tl().y + j.br().y)/2;
+						temp.frameWidth = mat.width();
+						if(secondMaxSize > 0){
+							boool = true;
+							MatOfPoint lprime = cameraIn.get(kprime);
+							Rect jprime = Imgproc.boundingRect(lprime);
+							threadOut nestedTemp = new threadOut();
+							nestedTemp.hasData = true;
+							nestedTemp.area = lprime.size().area();
+							nestedTemp.rectWidth = jprime.width;
+							nestedTemp.rectHeight = jprime.height;
+							nestedTemp.x = (jprime.tl().x + jprime.br().x)/2;
+							nestedTemp.y = (jprime.tl().y + jprime.br().y)/2;
+							nestedTemp.frameWidth = mat.width();
+							Imgproc.rectangle(mat, jprime.br(), jprime.tl(), new Scalar(255, 0, 0), 1);
+							temp.secondValue = nestedTemp;
+							temp.hasSecond = true;
+						}
+						long end = System.currentTimeMillis();
+						long delta = end - start;
+						if(boool)
+							temp.secondValue.proccessTime = delta;
+						temp.proccessTime = delta;
+						setFrameData(temp);
 					}
-					objects.addFirst(output);
-					timer.reset();
 				}
-				out.putFrame(mat);
+				vidOut.putFrame(mat);
 			}
-		});
-//		processingThread = new Thread(() -> {
-//			CvSink cvSink = CameraServer.getInstance().getVideo();
-//			CvSource out = CameraServer.getInstance().putVideo("Processed", 640, 480);
-//			Mat mat = new Mat();
-//			while(!Thread.interrupted()){
-//				if(cvSink.grabFrame(mat) == 0){
-//					out.notifyError(cvSink.getError());
-//					continue;
-//				}
-//				out.putFrame(mat);
-//			}
-//		});
-		processingThread.setDaemon(true);
-		processingThread.start();
+		}, 0, 10);
 		return this;
 	}
 	
-	public double getThetaSingleTape(double[] in){
-		SmartDashboard.putBoolean("ThetaTest1", true);
-		double W = in[0];
-		double H = in[1];
-		SmartDashboard.putBoolean("ThetaTest2", true);
-		double uW = (H/initialHeight)*initialWidth;
-		SmartDashboard.putNumber("ThetaTest3", uW);
-		SmartDashboard.putNumber("ThetaTest4", W);
-		double theta = Math.acos(W/uW);
-		SmartDashboard.putNumber("ThetaTest5", theta);
-		return theta;
+	private double rectDistance(threadOut in){
+		if(in.hasData){
+			double H = in.rectHeight;
+			return (initialHeight*initialDistance)/H;
+		}
+		return (Double) null;
 	}
 	
-	public double rectDistance(double[] in){
-		double H = in[1];
-		return (initialHeight*initialDistance)/H;
+	private double getThetaSingleTape(threadOut in, boolean peg){
+		if(in.hasData && peg){
+			if(in.hasSecond){
+				double W = in.rectWidth;
+				double H = in.rectHeight;
+				double uW = (H/initialHeight)*initialWidth;
+				double theta = Math.acos(W/uW);
+				theta = Math.copySign(theta,in.x - in.secondValue.x);
+				return theta;
+			}
+		}else if(in.hasData){
+			double W = in.rectWidth;
+			double H = in.rectHeight;
+			double uW = (H/initialHeight)*initialWidth;
+			double theta = Math.acos(W/uW);
+			return theta;
+		}
+		return (Double) null;
 	}
 	
-	public double getCenterDistance(double[] in, double theta){
-		double closestDistance = rectDistance(in);
-		double W = in[0];
-		return closestDistance + (Math.tan(theta)*W/2);
+	private double getCenterDistance(threadOut in, double theta, boolean peg){
+		if(in.hasData && peg){
+			if(in.hasSecond){
+				double closestDistance = rectDistance(in);
+				return closestDistance + (Math.tan(theta)*(2.0/2.0));
+			}
+		}else if(in.hasData){
+			double closestDistance = rectDistance(in);
+			double W = in.rectWidth;
+			return closestDistance + (Math.tan(theta)*(W/2.0));
+		}
+		return (Double) null;
 	}
 	
-	public double getHeadingOffeset(double[] in, double theta){
-		double x = in[3];
-		double wF = in[5];
-		double epsilon = x - (wF/2);
-		double initialEpsilon = initialX - (wF/2);
-		double gamma = Math.atan((epsilon/initialEpsilon)*Math.tan(initialGamma));
-		return gamma;
+	private double getHeadingOffeset(threadOut in, double theta, boolean peg){
+		if(in.hasData && peg){
+			if(in.hasSecond){
+				double x = (in.x + in.secondValue.x)/2.0;
+				double wF = in.frameWidth;
+				double epsilon = x - (wF/2.0);
+				double initialEpsilon = initialX - (wF/2.0);
+				double gamma = Math.atan((epsilon/initialEpsilon)*Math.tan(initialGamma));
+				return gamma;
+			}
+		}else if(in.hasData){
+			double x = in.x;
+			double wF = in.frameWidth;
+			double epsilon = x - (wF/2.0);
+			double initialEpsilon = initialX - (wF/2.0);
+			double gamma = Math.atan((epsilon/initialEpsilon)*Math.tan(initialGamma));
+			return gamma;
+		}
+		return (Double) null;
 	}
 	
-	public double simpleHeading(double[] in){
-		double x = in[3];
-		double wF = in[5];
-		double epsilon = x - (wF/2);
-		double zeta = Math.abs(epsilon) > (20/640)*wF ? Math.copySign(1.0, epsilon) : 0;
-		return zeta;
+	private double simpleHeading(threadOut in, boolean peg){
+		if(in.hasData && peg){
+			if(in.hasSecond){
+				double x = (in.x + in.secondValue.x)/2.0;
+				double wF = in.frameWidth;
+				double epsilon = x - (wF/2.0);
+				double zeta = epsilon/(wF/2.0);
+				return zeta;
+			}
+		}else if(in.hasData){
+			double x = in.x;
+			double wF = in.frameWidth;
+			double epsilon = x - (wF/2.0);
+			double zeta = epsilon/(wF/2.0);
+			return zeta;
+		}
+		return (Double) null;
+	}
+	
+	private double getOmega(threadOut in, double centerDistance, boolean peg){
+		if(in.hasData && peg){
+			if(in.hasSecond){
+				double x = (in.x + in.secondValue.x)/2.0;
+				double wF = in.frameWidth;
+				double epsilon = x - (wF/2);
+				double initialEpsilon = initialX - (wF/2);
+				double tanGam = (epsilon/initialEpsilon)*Math.tan(initialGamma);
+				double omega = tanGam*centerDistance;
+				return omega;
+			}
+		}else if(in.hasData){
+			double x = in.x;
+			double wF = in.frameWidth;
+			double epsilon = x - (wF/2);
+			double initialEpsilon = initialX - (wF/2);
+			double tanGam = (epsilon/initialEpsilon)*Math.tan(initialGamma);
+			double omega = tanGam*centerDistance;
+			return omega;
+		}
+		return (Double) null;
+	}
+	
+	public boolean dataExists(){
+		threadOut temp = getFrameData();
+		if(temp.hasData){
+			gotten = temp;
+			SmartDashboard.putNumber("visionArea1",temp.area);
+			SmartDashboard.putNumber("visionFrameWidth1",temp.frameWidth);
+			SmartDashboard.putNumber("visionRectHeight1",temp.rectHeight);
+			SmartDashboard.putNumber("visionRectWidth1",temp.rectWidth);
+			SmartDashboard.putNumber("visionX1",temp.x);
+			SmartDashboard.putNumber("visionY1",temp.y);
+			SmartDashboard.putNumber("visionProccessTime1",temp.proccessTime);
+			SmartDashboard.putBoolean("hasSecond", temp.hasSecond);
+			if(temp.hasSecond){
+				SmartDashboard.putNumber("visionArea2",temp.area);
+				SmartDashboard.putNumber("visionFrameWidth2",temp.frameWidth);
+				SmartDashboard.putNumber("visionRectHeight2",temp.rectHeight);
+				SmartDashboard.putNumber("visionRectWidth2",temp.rectWidth);
+				SmartDashboard.putNumber("visionX2",temp.x);
+				SmartDashboard.putNumber("visionY2",temp.y);
+				SmartDashboard.putNumber("visionProccessTime2",temp.proccessTime);
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	public visionField getData(){
+		if(gotten.hasData){
+			if(gotten.hasSecond){
+				visionField out = new visionField();
+				out.theta = getThetaSingleTape(gotten, true);
+				out.v = getCenterDistance(gotten, Math.abs(out.theta), true);
+				out.zeta = simpleHeading(gotten, true);
+				out.omega = getOmega(gotten, out.v, true);
+				out.gamma = getHeadingOffeset(gotten, Math.abs(out.theta), true);
+				out.isTape = false;
+				lastOut = out;
+				return out;
+			}else{
+				visionField out = new visionField();
+				out.theta = getThetaSingleTape(gotten,false);
+				out.v = getCenterDistance(gotten, out.theta,false);
+				out.zeta = simpleHeading(gotten,false);
+				out.omega = getOmega(gotten, out.v,false);
+				out.gamma = getHeadingOffeset(gotten, out.theta,false);
+				out.isTape = true;
+				lastOut = out;
+				return out;
+			}
+		}else if(!lastOut.equals(new threadOut())){
+			return lastOut;
+		}
+		return new visionField();
+	}
+	
+	public synchronized void setFrameData(threadOut in){
+		threadObjectData = in;
+	}
+	
+	public synchronized threadOut getFrameData(){
+		return threadObjectData;
+	}
+	
+	private class threadOut{
+		public double area;
+		public double rectWidth;
+		public double rectHeight;
+		public double frameWidth;
+		public double x;
+		public double y;
+		public threadOut secondValue;
+		public long proccessTime;
+		public boolean hasSecond = false;
+		public boolean hasData = false;
 	}
 }

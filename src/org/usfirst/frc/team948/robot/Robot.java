@@ -35,27 +35,14 @@ public class Robot extends IterativeRobot {
 	}
 	public void disabledPeriodic() {
 		SmartDashboard.putNumber("Time", clock.get());
-		if(!proccesor.objects.isEmpty()){
-			ArrayDeque<double[]> data = proccesor.objects.peekFirst();
-			if(data.size() > 0){
-				SmartDashboard.putBoolean("NoDataOut", false);
-			}else{
-				SmartDashboard.putBoolean("NoDataOut", true);
-			}
-			SmartDashboard.putNumber("DataZise", data.size());
-			for(int i = 0; data.size() > 0;i++){
-				double[] temp = data.pollLast();
-				SmartDashboard.putNumber("Object" + i + "Width", temp[0]);
-				SmartDashboard.putNumber("Object" + i + "Height", temp[1]);
-				SmartDashboard.putNumber("Object" + i + "X", temp[3]);
-				SmartDashboard.putNumber("Object" + i + "Y", temp[4]);
-				SmartDashboard.putNumber("Object" + i + "Area", temp[2]);
-				SmartDashboard.putNumber("Object" + i + "Size", temp[0]*temp[1]);
-				SmartDashboard.putNumber("Object" + i + "Theta", (proccesor.getThetaSingleTape(temp)*180)/Math.PI);
-				SmartDashboard.putNumber("Object" + i + "Distance", proccesor.getCenterDistance(temp, proccesor.getThetaSingleTape(temp)));
-				SmartDashboard.putNumber("Object" + i + "Gamma", (proccesor.getHeadingOffeset(temp,proccesor.getThetaSingleTape(temp))*180)/Math.PI);
-				SmartDashboard.putNumber("Object" + i + "Zeta", proccesor.simpleHeading(temp));
-			}
+		if(proccesor.dataExists()){
+			SmartDashboard.putBoolean("NoDataOut", false);
+			visionField data = proccesor.getData();
+			SmartDashboard.putNumber("Theta", (data.theta*180.0)/Math.PI);
+			SmartDashboard.putNumber("V", data.v);
+			SmartDashboard.putNumber("Gamma", (data.gamma*180.0)/Math.PI);
+			SmartDashboard.putNumber("Zeta", data.zeta);
+			SmartDashboard.putNumber("Omega", data.omega);
 		}
 		else{
 			SmartDashboard.putBoolean("NoDataOut", true);
