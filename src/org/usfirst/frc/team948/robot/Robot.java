@@ -45,6 +45,8 @@ public class Robot extends IterativeRobot {
 	}
 	
 	public void periodicAll(){
+		SmartDashboard.putNumber("leftEncoder", robotMap.leftEncoder.get());
+		SmartDashboard.putNumber("rightEncoder", robotMap.rightEncoder.get());
 		SmartDashboard.putNumber("Time", clock.get());
 		if (proccesor.dataExists()) {
 			SmartDashboard.putBoolean("NoDataOut", false);

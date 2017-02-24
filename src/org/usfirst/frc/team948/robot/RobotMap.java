@@ -36,5 +36,7 @@ public class RobotMap {
 		navX = new AHRS(SPI.Port.kMXP);
 		leftEncoder = new Encoder(preferences.getInt("leftEncoderPortOne", leftEncoderPortOne),preferences.getInt("leftEncoderPortTwo", leftEncoderPortTwo));
 		rightEncoder = new Encoder(preferences.getInt("rightEncoderPortOne", rightEncoderPortOne),preferences.getInt("rightEncoderPortTwo", rightEncoderPortTwo));
+		leftEncoder.setReverseDirection(preferences.getBoolean("leftEncoderInverted",true));
+		rightEncoder.setReverseDirection(preferences.getBoolean("rightEncoderInverted",false));
 	}
 }
