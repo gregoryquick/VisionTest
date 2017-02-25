@@ -1,6 +1,7 @@
 package org.usfirst.frc.team948.robot;
 
 import org.usfirst.frc.team948.utilities.ContinuousGyro;
+import org.usfirst.frc.team948.utilities.MeshedEncoders;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -26,6 +27,7 @@ public class RobotMap {
 	public static Encoder rightEncoder;
 	public static Preferences preferences;
 	public static ContinuousGyro navX;
+	public static MeshedEncoders meshedEncoder;
 	public RobotMap(){
 		preferences = Preferences.getInstance();
 		frontLeftMotor =new Victor(preferences.getInt("frontLeftMotorPort", frontLeftMotorPort));
@@ -37,5 +39,6 @@ public class RobotMap {
 		rightEncoder = new Encoder(preferences.getInt("rightEncoderPortOne", rightEncoderPortOne),preferences.getInt("rightEncoderPortTwo", rightEncoderPortTwo));
 		leftEncoder.setReverseDirection(preferences.getBoolean("leftEncoderInverted",true));
 		rightEncoder.setReverseDirection(preferences.getBoolean("rightEncoderInverted",false));
+		meshedEncoder = new MeshedEncoders(this);
 	}
 }

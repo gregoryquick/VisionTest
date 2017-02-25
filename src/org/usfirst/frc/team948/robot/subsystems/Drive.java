@@ -1,6 +1,8 @@
 package org.usfirst.frc.team948.robot.subsystems;
 
+import org.usfirst.frc.team948.robot.Robot;
 import org.usfirst.frc.team948.robot.RobotMap;
+import org.usfirst.frc.team948.robot.commands.DriveStraight;
 import org.usfirst.frc.team948.robot.commands.ManualDrive;
 
 import edu.wpi.first.wpilibj.PIDController;
@@ -14,8 +16,8 @@ public class Drive extends Subsystem implements PIDOutput{
 	private double pidError;
 	
 	private final double DRIVE_STRAIGHT_ON_HEADING_P = 0.025;
-	private final double DRIVE_STRAIGHT_ON_HEADING_I = 0.01;
-	private final double DRIVE_STRAIGHT_ON_HEADING_D = 0.02;
+	private final double DRIVE_STRAIGHT_ON_HEADING_I = 0.001;
+	private final double DRIVE_STRAIGHT_ON_HEADING_D = 0.03;
 	
 	public void initDefaultCommand() {
 		// Set the default command for a subsystem here.
@@ -25,7 +27,9 @@ public class Drive extends Subsystem implements PIDOutput{
 
 	public void driveOnHeadingInit(double heading)
 	{
-		drivePID = new PIDController(DRIVE_STRAIGHT_ON_HEADING_P, DRIVE_STRAIGHT_ON_HEADING_I, DRIVE_STRAIGHT_ON_HEADING_D, RobotMap.navX, this);
+		drivePID = new PIDController(Robot.robotMap.preferences.getDouble("DRIVE_STRAIGHT_ON_HEADING_P", DRIVE_STRAIGHT_ON_HEADING_P),
+				Robot.robotMap.preferences.getDouble("DRIVE_STRAIGHT_ON_HEADING_I", DRIVE_STRAIGHT_ON_HEADING_I),
+				Robot.robotMap.preferences.getDouble("DRIVE_STRAIGHT_ON_HEADING_D", DRIVE_STRAIGHT_ON_HEADING_D), RobotMap.navX, this);
 		drivePID.setSetpoint(heading);
 		drivePID.setOutputRange(-1, 1);
 		drivePID.enable();
@@ -34,8 +38,8 @@ public class Drive extends Subsystem implements PIDOutput{
 	public void driveOnHeading(double power)
 	{
 		double leftPower, rightPower;
-		leftPower = power + pidOutput;
-		rightPower = power - pidOutput;
+		leftPower = power - pidOutput;
+		rightPower = power + pidOutput;
 		rawTankDrive(leftPower, rightPower);		
 		SmartDashboard.putNumber("PID error", pidError);
 		SmartDashboard.putNumber("PID Output", pidOutput);

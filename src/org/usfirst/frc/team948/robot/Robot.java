@@ -1,5 +1,7 @@
 package org.usfirst.frc.team948.robot;
 
+import org.usfirst.frc.team948.robot.commands.DriveStraight;
+import org.usfirst.frc.team948.robot.commands.ManualDrive;
 import org.usfirst.frc.team948.robot.subsystems.Drive;
 
 import edu.wpi.cscore.UsbCamera;
@@ -30,12 +32,14 @@ public class Robot extends IterativeRobot {
 		drive = new Drive();
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 		camera.setExposureManual(-11);
-		// camera.setResolution(640, 380);
 		proccesor = new visionProc().start();
 		SmartDashboard.putNumber("Time", clock.get());
+		SmartDashboard.putData("ManualDrive", new ManualDrive());
+		SmartDashboard.putData("DriveStraight", new DriveStraight());
 	}
 
 	public void teleopPeriodic() {
+		SmartDashboard.putData("DriveStraight", new DriveStraight());
 		periodicAll();
 		Scheduler.getInstance().run();
 	}

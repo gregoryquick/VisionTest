@@ -23,7 +23,7 @@ public class DriveStraight extends CommandBase{
 	protected void execute() {
 		double power = MathUtilities.deadband(DS2016.rightJS.getY(), .2);
 		drive.driveOnHeading(power);
-		System.out.println("execute");
+//		System.out.println("execute");
 	}
 
 	@Override
