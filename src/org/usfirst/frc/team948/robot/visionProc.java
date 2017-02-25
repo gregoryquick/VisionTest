@@ -167,7 +167,8 @@ public class visionProc {
 				double wF = in.frameWidth;
 				double epsilon = x - (wF/2.0);
 				double initialEpsilon = initialX - (wF/2.0);
-				double gamma = Math.atan((epsilon/initialEpsilon)*Math.tan(initialGamma));
+//				2.0 is width in inches of tape
+				double gamma = Math.atan((epsilon*2.0)/(initialDistance*initialWidth));
 				return gamma;
 			}
 		}else if(in.hasData){
@@ -175,7 +176,8 @@ public class visionProc {
 			double wF = in.frameWidth;
 			double epsilon = x - (wF/2.0);
 			double initialEpsilon = initialX - (wF/2.0);
-			double gamma = Math.atan((epsilon/initialEpsilon)*Math.tan(initialGamma));
+//			2.0 is width in inches of tape
+			double gamma = Math.atan((epsilon*2.0)/(initialDistance*initialWidth));
 			return gamma;
 		}
 		return (Double) null;
@@ -207,8 +209,8 @@ public class visionProc {
 				double wF = in.frameWidth;
 				double epsilon = x - (wF/2);
 				double initialEpsilon = initialX - (wF/2);
-				double tanGam = (epsilon/initialEpsilon)*Math.tan(initialGamma);
-				double omega = tanGam*centerDistance;
+//				2.0 is width in inches of tape
+				double omega = (centerDistance*epsilon*2.0)/(initialDistance*initialWidth);
 				return omega;
 			}
 		}else if(in.hasData){
@@ -216,8 +218,8 @@ public class visionProc {
 			double wF = in.frameWidth;
 			double epsilon = x - (wF/2);
 			double initialEpsilon = initialX - (wF/2);
-			double tanGam = (epsilon/initialEpsilon)*Math.tan(initialGamma);
-			double omega = tanGam*centerDistance;
+//			2.0 is width in inches of tape
+			double omega = (centerDistance*epsilon*2.0)/(initialDistance*initialWidth);
 			return omega;
 		}
 		return (Double) null;
