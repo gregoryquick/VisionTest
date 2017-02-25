@@ -25,15 +25,14 @@ public class RobotMap {
 	public static Encoder leftEncoder;
 	public static Encoder rightEncoder;
 	public static Preferences preferences;
-	public static AHRS navX;
-	public static ContinuousGyro continuousGyro = new ContinuousGyro(SPI.Port.kMXP);
+	public static ContinuousGyro navX;
 	public RobotMap(){
 		preferences = Preferences.getInstance();
 		frontLeftMotor =new Victor(preferences.getInt("frontLeftMotorPort", frontLeftMotorPort));
 		frontRightMotor = new Victor(preferences.getInt("frontRightMotorPort", frontRightMotorPort));
 		backLeftMotor = new Victor(preferences.getInt("backLeftMotorPort", backLeftMotorPort));
 		backRightMotor = new Victor(preferences.getInt("backRightMotorPort", backRightMotorPort));
-		navX = new AHRS(SPI.Port.kMXP);
+		navX = new ContinuousGyro(SPI.Port.kMXP);
 		leftEncoder = new Encoder(preferences.getInt("leftEncoderPortOne", leftEncoderPortOne),preferences.getInt("leftEncoderPortTwo", leftEncoderPortTwo));
 		rightEncoder = new Encoder(preferences.getInt("rightEncoderPortOne", rightEncoderPortOne),preferences.getInt("rightEncoderPortTwo", rightEncoderPortTwo));
 		leftEncoder.setReverseDirection(preferences.getBoolean("leftEncoderInverted",true));

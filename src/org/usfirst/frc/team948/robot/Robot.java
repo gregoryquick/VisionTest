@@ -25,6 +25,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void robotInit() {
+		SmartDashboard.putBoolean("Test1", true);
 		clock.start();
 		robotMap = new RobotMap();
 		drive = new Drive();
@@ -45,6 +46,7 @@ public class Robot extends IterativeRobot {
 	}
 	
 	public void periodicAll(){
+		SmartDashboard.putBoolean("Test2", true);
 		SmartDashboard.putNumber("leftEncoder", robotMap.leftEncoder.get());
 		SmartDashboard.putNumber("rightEncoder", robotMap.rightEncoder.get());
 		SmartDashboard.putNumber("Yaw", robotMap.navX.getAngle());
