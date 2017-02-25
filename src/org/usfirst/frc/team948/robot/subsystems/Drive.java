@@ -25,7 +25,7 @@ public class Drive extends Subsystem implements PIDOutput{
 
 	public void driveOnHeadingInit(double heading)
 	{
-		drivePID = new PIDController(DRIVE_STRAIGHT_ON_HEADING_P, DRIVE_STRAIGHT_ON_HEADING_I, DRIVE_STRAIGHT_ON_HEADING_D, RobotMap.continuousGyro, this);
+		drivePID = new PIDController(DRIVE_STRAIGHT_ON_HEADING_P, DRIVE_STRAIGHT_ON_HEADING_I, DRIVE_STRAIGHT_ON_HEADING_D, RobotMap.navX, this);
 		drivePID.setSetpoint(heading);
 		drivePID.setOutputRange(-1, 1);
 		drivePID.enable();

@@ -15,7 +15,7 @@ public class DriveStraight extends CommandBase{
 	
 	@Override
 	protected void initialize() {
-		double heading = RobotMap.continuousGyro.getAngle();
+		double heading = RobotMap.navX.getAngle();
 		drive.driveOnHeadingInit(heading);
 	}
 
