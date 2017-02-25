@@ -26,13 +26,13 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		clock.start();
+		robotMap = new RobotMap();
+		drive = new Drive();
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 		camera.setExposureManual(-11);
 		// camera.setResolution(640, 380);
 		proccesor = new visionProc().start();
 		SmartDashboard.putNumber("Time", clock.get());
-		robotMap = new RobotMap();
-		drive = new Drive();
 	}
 
 	public void teleopPeriodic() {
@@ -47,6 +47,7 @@ public class Robot extends IterativeRobot {
 	public void periodicAll(){
 		SmartDashboard.putNumber("leftEncoder", robotMap.leftEncoder.get());
 		SmartDashboard.putNumber("rightEncoder", robotMap.rightEncoder.get());
+		SmartDashboard.putNumber("Yaw", robotMap.navX.getAngle());
 		SmartDashboard.putNumber("Time", clock.get());
 		if (proccesor.dataExists()) {
 			SmartDashboard.putBoolean("NoDataOut", false);
