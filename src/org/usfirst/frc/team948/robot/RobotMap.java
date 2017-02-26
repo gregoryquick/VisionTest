@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj.Victor;
 public class RobotMap {
 	private static final int frontLeftMotorPort = 0;
 	private static final int frontRightMotorPort = 2;
-	private static final int backLeftMotorPort = 3;
-	private static final int backRightMotorPort = 1;
+	private static final int backLeftMotorPort = 1;
+	private static final int backRightMotorPort = 3;
 	private static final int leftEncoderPortOne = 0;
 	private static final int leftEncoderPortTwo = 1;
 	private static final int rightEncoderPortOne = 2;
@@ -34,6 +34,10 @@ public class RobotMap {
 		frontRightMotor = new Victor(preferences.getInt("frontRightMotorPort", frontRightMotorPort));
 		backLeftMotor = new Victor(preferences.getInt("backLeftMotorPort", backLeftMotorPort));
 		backRightMotor = new Victor(preferences.getInt("backRightMotorPort", backRightMotorPort));
+		frontLeftMotor.setInverted(true);
+		backLeftMotor.setInverted(true);
+		frontRightMotor.setInverted(false);
+		backLeftMotor.setInverted(false);
 		navX = new ContinuousGyro(SPI.Port.kMXP);
 		leftEncoder = new Encoder(preferences.getInt("leftEncoderPortOne", leftEncoderPortOne),preferences.getInt("leftEncoderPortTwo", leftEncoderPortTwo));
 		rightEncoder = new Encoder(preferences.getInt("rightEncoderPortOne", rightEncoderPortOne),preferences.getInt("rightEncoderPortTwo", rightEncoderPortTwo));

@@ -1,7 +1,8 @@
 package org.usfirst.frc.team948.robot;
 
-import org.usfirst.frc.team948.robot.commands.DriveStraight;
+import org.usfirst.frc.team948.robot.commands.DriveStraightDistance;
 import org.usfirst.frc.team948.robot.commands.ManualDrive;
+import org.usfirst.frc.team948.robot.commands.ManualDriveStraight;
 import org.usfirst.frc.team948.robot.subsystems.Drive;
 
 import edu.wpi.cscore.UsbCamera;
@@ -35,11 +36,14 @@ public class Robot extends IterativeRobot {
 		proccesor = new visionProc().start();
 		SmartDashboard.putNumber("Time", clock.get());
 		SmartDashboard.putData("ManualDrive", new ManualDrive());
-		SmartDashboard.putData("DriveStraight", new DriveStraight());
+		SmartDashboard.putData("DriveStraight", new ManualDriveStraight());
+		SmartDashboard.putData("DriveStraight 5 inches", new DriveStraightDistance(5.0, Drive.Direction.FORWARD));
 	}
 
 	public void teleopPeriodic() {
-		SmartDashboard.putData("DriveStraight", new DriveStraight());
+		robotMap.backLeftMotor.set(1.0);
+		robotMap.frontLeftMotor.set(-1.0);
+//		SmartDashboard.putData("DriveStraight 5 inches", new DriveStraitDistance(robotMap, 5.0));
 		periodicAll();
 		Scheduler.getInstance().run();
 	}

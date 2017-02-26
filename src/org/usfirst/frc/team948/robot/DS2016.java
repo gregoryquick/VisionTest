@@ -1,7 +1,7 @@
 package org.usfirst.frc.team948.robot;
 
-import org.usfirst.frc.team948.robot.commands.DriveStraight;
 import org.usfirst.frc.team948.robot.commands.ManualDrive;
+import org.usfirst.frc.team948.robot.commands.ManualDriveStraight;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
@@ -44,7 +44,7 @@ public class DS2016 {
 	
 	public static void buttonInit()
 	{
-		rightTrigger.whenPressed(new DriveStraight());
+		rightTrigger.whenPressed(new ManualDriveStraight());
 		rightTrigger.whenReleased(new ManualDrive());
 		//rightTrigger.whileHeld(command);
 	}

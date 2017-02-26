@@ -27,8 +27,8 @@ public class visionProc {
 	private static final double initialDistance = bool ? 32.6 : 0;
 	private static final double initialHeight = bool ? 26.0 : 0;
 	private static final double initialWidth = bool ? 10.5 : 0;
-	private static final double initialX = bool ? 39.5 : 0;
-	private static final double initialGamma = bool ? ((-5.0)*Math.PI)/180.0 : ((0.0)*Math.PI)/180.0;
+//	private static final double initialX = bool ? 39.5 : 0;
+//	private static final double initialGamma = bool ? ((-5.0)*Math.PI)/180.0 : ((0.0)*Math.PI)/180.0;
 	private threadOut gotten;
 	private visionField lastOut;
 	
@@ -166,7 +166,7 @@ public class visionProc {
 				double x = (in.x + in.secondValue.x)/2.0;
 				double wF = in.frameWidth;
 				double epsilon = x - (wF/2.0);
-				double initialEpsilon = initialX - (wF/2.0);
+//				double initialEpsilon = initialX - (wF/2.0);
 //				2.0 is width in inches of tape
 				double gamma = Math.atan((epsilon*2.0)/(initialDistance*initialWidth));
 				return gamma;
@@ -175,7 +175,7 @@ public class visionProc {
 			double x = in.x;
 			double wF = in.frameWidth;
 			double epsilon = x - (wF/2.0);
-			double initialEpsilon = initialX - (wF/2.0);
+//			double initialEpsilon = initialX - (wF/2.0);
 //			2.0 is width in inches of tape
 			double gamma = Math.atan((epsilon*2.0)/(initialDistance*initialWidth));
 			return gamma;
@@ -208,7 +208,7 @@ public class visionProc {
 				double x = (in.x + in.secondValue.x)/2.0;
 				double wF = in.frameWidth;
 				double epsilon = x - (wF/2);
-				double initialEpsilon = initialX - (wF/2);
+//				double initialEpsilon = initialX - (wF/2);
 //				2.0 is width in inches of tape
 				double omega = (centerDistance*epsilon*2.0)/(initialDistance*initialWidth);
 				return omega;
@@ -217,7 +217,7 @@ public class visionProc {
 			double x = in.x;
 			double wF = in.frameWidth;
 			double epsilon = x - (wF/2);
-			double initialEpsilon = initialX - (wF/2);
+//			double initialEpsilon = initialX - (wF/2);
 //			2.0 is width in inches of tape
 			double omega = (centerDistance*epsilon*2.0)/(initialDistance*initialWidth);
 			return omega;
