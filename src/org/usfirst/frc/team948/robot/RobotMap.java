@@ -30,19 +30,13 @@ public class RobotMap {
 	public static MeshedEncoders meshedEncoder;
 	public RobotMap(){
 		preferences = Preferences.getInstance();
-		frontLeftMotor =new Victor(preferences.getInt("frontLeftMotorPort", frontLeftMotorPort));
-		frontRightMotor = new Victor(preferences.getInt("frontRightMotorPort", frontRightMotorPort));
-		backLeftMotor = new Victor(preferences.getInt("backLeftMotorPort", backLeftMotorPort));
-		backRightMotor = new Victor(preferences.getInt("backRightMotorPort", backRightMotorPort));
-		frontLeftMotor.setInverted(true);
-		backLeftMotor.setInverted(true);
-		frontRightMotor.setInverted(false);
-		backLeftMotor.setInverted(false);
+		frontLeftMotor =new Victor(frontLeftMotorPort);
+		frontRightMotor = new Victor(frontRightMotorPort);
+		backLeftMotor = new Victor(backLeftMotorPort);
+		backRightMotor = new Victor(backRightMotorPort);
 		navX = new ContinuousGyro(SPI.Port.kMXP);
-		leftEncoder = new Encoder(preferences.getInt("leftEncoderPortOne", leftEncoderPortOne),preferences.getInt("leftEncoderPortTwo", leftEncoderPortTwo));
-		rightEncoder = new Encoder(preferences.getInt("rightEncoderPortOne", rightEncoderPortOne),preferences.getInt("rightEncoderPortTwo", rightEncoderPortTwo));
-		leftEncoder.setReverseDirection(preferences.getBoolean("leftEncoderInverted",true));
-		rightEncoder.setReverseDirection(preferences.getBoolean("rightEncoderInverted",false));
+		leftEncoder = new Encoder(leftEncoderPortOne, leftEncoderPortTwo);
+		rightEncoder = new Encoder(rightEncoderPortOne, rightEncoderPortTwo);
 		meshedEncoder = new MeshedEncoders(this);
 	}
 }

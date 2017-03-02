@@ -41,9 +41,6 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void teleopPeriodic() {
-		robotMap.backLeftMotor.set(1.0);
-		robotMap.frontLeftMotor.set(-1.0);
-//		SmartDashboard.putData("DriveStraight 5 inches", new DriveStraitDistance(robotMap, 5.0));
 		periodicAll();
 		Scheduler.getInstance().run();
 	}

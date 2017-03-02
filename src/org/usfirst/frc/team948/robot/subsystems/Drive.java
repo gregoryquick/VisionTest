@@ -114,10 +114,10 @@ public class Drive extends Subsystem implements PIDOutput {
 	}
 
 	public void tankDrive(double leftPower, double rightPower) {
-//		RobotMap.frontLeftMotor.set(Math.abs(leftPower) > 0.5 ? Math.copySign(0.5, leftPower) : leftPower);
-//		RobotMap.backLeftMotor.set(Math.abs(leftPower) > 0.5 ? Math.copySign(0.5, leftPower) : leftPower);
-//		RobotMap.frontRightMotor.set(Math.abs(rightPower) > 0.5 ? Math.copySign(0.5, rightPower) : rightPower);
-//		RobotMap.backRightMotor.set(Math.abs(rightPower) > 0.5 ? Math.copySign(0.5, rightPower) : rightPower);
+		RobotMap.frontLeftMotor.set(-leftPower);
+		RobotMap.backLeftMotor.set(-leftPower);
+		RobotMap.frontRightMotor.set(rightPower);
+		RobotMap.backRightMotor.set(rightPower);
 	}
 
 	public void stop() {
