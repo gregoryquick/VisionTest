@@ -26,7 +26,8 @@ public class RobotMap {
 	public static Encoder leftEncoder;
 	public static Encoder rightEncoder;
 	public static Preferences preferences;
-	public static ContinuousGyro navX;
+	public static AHRS navx = new AHRS(SPI.Port.kMXP);
+	public static ContinuousGyro continuousGyro = new ContinuousGyro(navx);
 	public static MeshedEncoders meshedEncoder;
 	public RobotMap(){
 		preferences = Preferences.getInstance();
@@ -34,8 +35,7 @@ public class RobotMap {
 		frontRightMotor = new Victor(frontRightMotorPort);
 		backLeftMotor = new Victor(backLeftMotorPort);
 		backRightMotor = new Victor(backRightMotorPort);
-		navX = new ContinuousGyro(SPI.Port.kMXP);
-		leftEncoder = new Encoder(leftEncoderPortOne, leftEncoderPortTwo);
+		leftEncoder = new Encoder(leftEncoderPortOne, leftEncoderPortTwo, true);
 		rightEncoder = new Encoder(rightEncoderPortOne, rightEncoderPortTwo);
 		meshedEncoder = new MeshedEncoders(this);
 	}

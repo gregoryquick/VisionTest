@@ -2,6 +2,7 @@ package org.usfirst.frc.team948.robot;
 
 import org.usfirst.frc.team948.robot.commands.ManualDrive;
 import org.usfirst.frc.team948.robot.commands.ManualDriveStraight;
+import org.usfirst.frc.team948.robot.commands.ResetSensors;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
@@ -11,7 +12,7 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
  */
-public class DS2016 {
+public class OI {
     //// CREATING BUTTONS
     // One type of button is a joystick button which is any button on a joystick.
     // You create one by telling it which joystick it's on and which button
@@ -38,14 +39,17 @@ public class DS2016 {
     // Start the command when the button is released  and let it run the command
     // until it is finished as determined by it's isFinished method.
     // button.whenReleased(new ExampleCommand());
-	public static Joystick leftJS= new Joystick (0);
-	public static Joystick rightJS = new Joystick (1);
-	public static Button rightTrigger = new JoystickButton(rightJS, 1);
+	public static Joystick leftJoystick= new Joystick (0);
+	public static Joystick rightJoystick = new Joystick (1);
+	public static Button leftTrigger = new JoystickButton(leftJoystick, 1);
+	public static JoystickButton resetSensorsButton = new JoystickButton(leftJoystick, 11);
+
 	
 	public static void buttonInit()
 	{
-		rightTrigger.whenPressed(new ManualDriveStraight());
-		rightTrigger.whenReleased(new ManualDrive());
+		resetSensorsButton.whenPressed(new ResetSensors());
+		leftTrigger.whenPressed(new ManualDriveStraight());
+		leftTrigger.whenReleased(new ManualDrive());
 		//rightTrigger.whileHeld(command);
 	}
 }

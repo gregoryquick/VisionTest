@@ -3,7 +3,7 @@ package org.usfirst.frc.team948.robot.subsystems;
 import org.usfirst.frc.team948.robot.Robot;
 import org.usfirst.frc.team948.robot.RobotMap;
 import org.usfirst.frc.team948.robot.commands.ManualDrive;
-import org.usfirst.frc.team948.utilities.MathUtilities;
+import org.usfirst.frc.team948.utilities.MathUtil;
 import org.usfirst.frc.team948.utilities.PreferenceKeys;
 
 import edu.wpi.first.wpilibj.PIDController;
@@ -31,12 +31,12 @@ public class Drive extends Subsystem implements PIDOutput {
 	private static final double SLOW_DOWN_ERROR = 10.0;
 	private static final double MIN_POWER_TURN = 0.15;
 
-	private static final double DRIVE_STRAIGHT_ON_HEADING_P = 0.025;
-	private static final double DRIVE_STRAIGHT_ON_HEADING_I = 0.001;
-	private static final double DRIVE_STRAIGHT_ON_HEADING_D = 0.03;
+	private static final double DRIVE_STRAIGHT_ON_HEADING_P = 0.081;
+	private static final double DRIVE_STRAIGHT_ON_HEADING_I = 0.016;
+	private static final double DRIVE_STRAIGHT_ON_HEADING_D = 0.072;
 	private static final double DRIVE_STRAIGHT_ON_HEADING_F = 0.0;
 
-	private static final double DEFAULT_TICKS_PER_INCH = 121;
+	private static final double DEFAULT_TICKS_PER_INCH = 224/12.0;
 	private static final double DEFAULT_DISTANCE_TOLERANCE = 1.0 * DEFAULT_TICKS_PER_INCH;
 
 	private double kp;
@@ -56,11 +56,11 @@ public class Drive extends Subsystem implements PIDOutput {
 		PIDOutput = output;
 	}
 
-	public void drivePIDInit(double p, double i, double d, double setPoint, double tolerance,
-			int toleranceBuffLength) {
-		drivePID = new PIDController(p, i, d, RobotMap.navX, this);
+
+	public void drivePIDInit(double p, double i, double d, double setPoint, double tolerance, int toleranceBuffLength) {
+		drivePID = new PIDController(p, i, d, RobotMap.continuousGyro, this);
 		drivePID.reset();
-		drivePID.setOutputRange(-0.3, 0.3);
+		drivePID.setOutputRange(-1, 1);
 		if (tolerance != 0.0) {
 			drivePID.setAbsoluteTolerance(tolerance);
 			drivePID.setToleranceBuffer(toleranceBuffLength);
@@ -84,23 +84,46 @@ public class Drive extends Subsystem implements PIDOutput {
 
 	public void driveOnHeading(double power, double desiredHeading) {
 		drivePID.setSetpoint(desiredHeading);
-//		setAutonomousHeading(desiredHeading);
+		setAutonomousHeading(desiredHeading);
 		double error = drivePID.getError();
-//		double outputRange = MathUtilities.clamp(
-//				PID_MIN_OUTPUT + (Math.abs(error) / 15.0) * (PID_MAX_OUTPUT - PID_MIN_OUTPUT), 0, PID_MAX_OUTPUT);
-//		drivePID.setOutputRange(-outputRange, outputRange);
+		double outputRange = MathUtil.clamp(
+				PID_MIN_OUTPUT + (Math.abs(error) / 15.0) * (PID_MAX_OUTPUT - PID_MIN_OUTPUT), 0, PID_MAX_OUTPUT);
+		drivePID.setOutputRange(-outputRange, outputRange);
 
-		double currentPIDOutput = MathUtilities.clamp(PIDOutput+kf, -0.5, 0.5);
+		double currentPIDOutput = MathUtil.clamp(PIDOutput+kf, -PID_MAX_OUTPUT, PID_MAX_OUTPUT);
 
-		SmartDashboard.putNumber("driveOnHeading PID error", error);
+		SmartDashboard.putNumber("driveOnHeading PID error", drivePID.getError());
 		SmartDashboard.putNumber("driveOnHeading PID output", currentPIDOutput);
 		SmartDashboard.putNumber("driveOnHeading rawPower", power);
 		SmartDashboard.putNumber("desired heading", desiredHeading);
 
 		double pL = power;
 		double pR = power;
-		pL += currentPIDOutput;
-		pR -= currentPIDOutput;
+
+		// go straight but correct with the pidOutput
+		// given the pid output, rotate accordingly
+
+		if (power > 0) { // moving forward
+			if (currentPIDOutput > 0) {
+				// turning to the left because right is too high -> decrease
+				// right
+				pR -= currentPIDOutput;
+			} else {
+				// turning to the right because left is too high-> decrease left
+				pL += currentPIDOutput;
+			}
+		} else { // moving backward
+			if (currentPIDOutput > 0) {
+				// turning to the right because left is too high -> decrease
+				// left
+				pL += currentPIDOutput;
+			} else {
+				// turning to the left because right is too high -> decrease
+				// right
+				pR -= currentPIDOutput;
+			}
+		}
+
 		SmartDashboard.putNumber("Left driveOnHeading power", pL);
 		SmartDashboard.putNumber("Right driveOnHeading power", pR);
 		tankDrive(pL, pR);
@@ -114,10 +137,10 @@ public class Drive extends Subsystem implements PIDOutput {
 	}
 
 	public void tankDrive(double leftPower, double rightPower) {
-		RobotMap.frontLeftMotor.set(-leftPower);
-		RobotMap.backLeftMotor.set(-leftPower);
-		RobotMap.frontRightMotor.set(rightPower);
-		RobotMap.backRightMotor.set(rightPower);
+		RobotMap.frontLeftMotor.set(leftPower);
+		RobotMap.backLeftMotor.set(leftPower);
+		RobotMap.frontRightMotor.set(-rightPower);
+		RobotMap.backRightMotor.set(-rightPower);
 	}
 
 	public void stop() {
@@ -129,7 +152,7 @@ public class Drive extends Subsystem implements PIDOutput {
 
 	public void turnToHeadingInitNoPID(double desiredHeading) {
 		setAutonomousHeading(desiredHeading);
-		turnError = desiredHeading - RobotMap.navX.getAngle();
+		turnError = desiredHeading - RobotMap.navx.getAngle();
 		requiredCyclesOnTarget = RobotMap.preferences.getInt("TURN_TOLERANCE_BUFFER", 6);
 		turnTolerance = RobotMap.preferences.getDouble("TURN_TOLERANCE", 1.0);
 		kp = RobotMap.preferences.getDouble("TURN_P", .025);
@@ -139,10 +162,10 @@ public class Drive extends Subsystem implements PIDOutput {
 	}
 
 	public void turnToHeadingNoPID(double maxPower) {
-		turnError = getAutonomousHeading() - RobotMap.navX.getAngle();
+		turnError = getAutonomousHeading() - RobotMap.navx.getAngle();
 		double angularVel = prevTurnError - turnError;
 		double predictedErrorNextCycle = turnError - angularVel;
-		double adjustedPower = MathUtilities.clamp(Math.abs(predictedErrorNextCycle * kp), MIN_POWER_TURN, maxPower);
+		double adjustedPower = MathUtil.clamp(Math.abs(predictedErrorNextCycle * kp), MIN_POWER_TURN, maxPower);
 		SmartDashboard.putNumber("turnToHeadingNoPID turnError", turnError);
 		SmartDashboard.putNumber("turnToHeadingNoPID scaledPower", adjustedPower);
 		adjustedPower = Math.copySign(adjustedPower, predictedErrorNextCycle);

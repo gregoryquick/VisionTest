@@ -22,7 +22,7 @@ public class Robot extends IterativeRobot {
 	private static visionProc proccesor;
 	private static Timer clock = new Timer();
 	public final double tickDistance = 30;
-	public static DS2016 oi;
+	public static OI oi;
 	public static Drive drive;
 	public static RobotMap robotMap;
 
@@ -31,13 +31,14 @@ public class Robot extends IterativeRobot {
 		clock.start();
 		robotMap = new RobotMap();
 		drive = new Drive();
+		OI.buttonInit();
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 		camera.setExposureManual(-11);
 		proccesor = new visionProc().start();
 		SmartDashboard.putNumber("Time", clock.get());
 		SmartDashboard.putData("ManualDrive", new ManualDrive());
 		SmartDashboard.putData("DriveStraight", new ManualDriveStraight());
-		SmartDashboard.putData("DriveStraight 5 inches", new DriveStraightDistance(5.0, Drive.Direction.FORWARD));
+		SmartDashboard.putData("DriveStraight 5 feet", new DriveStraightDistance(60.0, Drive.Direction.FORWARD));
 	}
 
 	public void teleopPeriodic() {
@@ -52,7 +53,7 @@ public class Robot extends IterativeRobot {
 	public void periodicAll(){
 		SmartDashboard.putNumber("leftEncoder", robotMap.leftEncoder.get());
 		SmartDashboard.putNumber("rightEncoder", robotMap.rightEncoder.get());
-		SmartDashboard.putNumber("Yaw", robotMap.navX.getAngle());
+		SmartDashboard.putNumber("Yaw", robotMap.navx.getAngle());
 		SmartDashboard.putNumber("Time", clock.get());
 		if (proccesor.dataExists()) {
 			SmartDashboard.putBoolean("NoDataOut", false);

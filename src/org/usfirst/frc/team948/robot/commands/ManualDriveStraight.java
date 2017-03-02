@@ -1,5 +1,5 @@
 package org.usfirst.frc.team948.robot.commands;
-import org.usfirst.frc.team948.robot.DS2016;
+import org.usfirst.frc.team948.robot.OI;
 import org.usfirst.frc.team948.robot.Robot;
 import org.usfirst.frc.team948.robot.RobotMap;
 
@@ -13,13 +13,13 @@ public class ManualDriveStraight extends Command {
 
 	@Override 
 	protected void initialize() {
-		desiredHeading = RobotMap.navX.getAngle();
+		desiredHeading = RobotMap.continuousGyro.getAngle();
 		Robot.drive.driveOnHeadingInit(desiredHeading);
 	} 
 	
 	@Override 
 	protected void execute(){
-		Robot.drive.driveOnHeading(DS2016.rightJS.getY(), desiredHeading);
+		Robot.drive.driveOnHeading(-OI.leftJoystick.getY(), desiredHeading);
 	}
 	
 	@Override

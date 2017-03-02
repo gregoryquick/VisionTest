@@ -1,8 +1,10 @@
 package org.usfirst.frc.team948.robot.commands;
 
-import org.usfirst.frc.team948.robot.DS2016;
+import org.usfirst.frc.team948.robot.OI;
+import org.usfirst.frc.team948.robot.OI;
 import org.usfirst.frc.team948.robot.Robot;
-import org.usfirst.frc.team948.utilities.MathUtilities;
+import org.usfirst.frc.team948.utilities.MathUtil;
+import org.usfirst.frc.team948.utilities.MathUtil;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,8 +25,8 @@ public class ManualDrive extends Command {
 
 	@Override
 	protected void execute() {
-		double leftJoystick = MathUtilities.deadband(DS2016.leftJS.getY(), 0.1);
-		double rightJoystick = MathUtilities.deadband(DS2016.rightJS.getY(), 0.1);
+		double leftJoystick = MathUtil.deadband(-OI.leftJoystick.getY(), 0.1);
+		double rightJoystick = MathUtil.deadband(-OI.rightJoystick.getY(), 0.1);
 		Robot.drive.tankDrive(leftJoystick, rightJoystick);
 	}
 

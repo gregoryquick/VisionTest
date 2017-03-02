@@ -2,16 +2,32 @@ package org.usfirst.frc.team948.utilities;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.SPI.Port;
 
-public class ContinuousGyro extends AHRS {
+public class ContinuousGyro implements PIDSource {
+	public AHRS navx;
 
-	public ContinuousGyro(Port spi_port_id) {
-		super(spi_port_id);
-		// TODO Auto-generated constructor stub
+	public ContinuousGyro(AHRS navx) {
+		this.navx = navx;
 	}
 
-	public double pidGet(){
+	public double getAngle() {
+		return navx.getAngle();
+	}
+
+	@Override
+	public double pidGet() {
 		return getAngle();
+	}
+
+	@Override
+	public void setPIDSourceType(PIDSourceType pidSource) {
+	}
+
+	@Override
+	public PIDSourceType getPIDSourceType() {
+		return PIDSourceType.kDisplacement;
 	}
 }

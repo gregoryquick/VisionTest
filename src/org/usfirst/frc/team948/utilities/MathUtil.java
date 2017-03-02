@@ -1,6 +1,6 @@
 package org.usfirst.frc.team948.utilities;
 
-public class MathUtilities {
+public class MathUtil {
 	public static double clamp(double input, double min, double max){
 		if(input < min){
 			return min;
