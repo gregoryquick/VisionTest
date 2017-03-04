@@ -5,6 +5,8 @@ import org.usfirst.frc.team948.robot.commands.ManualDrive;
 import org.usfirst.frc.team948.robot.commands.ManualDriveStraight;
 import org.usfirst.frc.team948.robot.commands.VisionDriveCommandOne;
 import org.usfirst.frc.team948.robot.commands.VisionDriveCommandTwo;
+import org.usfirst.frc.team948.robot.commands.VisionDriveContOne;
+import org.usfirst.frc.team948.robot.commands.VisionDriveContTwo;
 import org.usfirst.frc.team948.robot.subsystems.Drive;
 
 import edu.wpi.cscore.UsbCamera;
@@ -43,6 +45,8 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("DriveStraight 5 feet", new DriveStraightDistance(60.0, Drive.Direction.FORWARD));
 		SmartDashboard.putData("Drive With Vision One", new VisionDriveCommandOne(0.3, proccesor, true));
 		SmartDashboard.putData("Drive With Vision Two", new VisionDriveCommandTwo(0.3, proccesor, true));
+		SmartDashboard.putData("Drive With Vision Three", new VisionDriveContOne(0.5, proccesor));
+		SmartDashboard.putData("Drive With Vision Four", new VisionDriveContTwo(0.5, proccesor));
 	}
 
 	public void teleopPeriodic() {

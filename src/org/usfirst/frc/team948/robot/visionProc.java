@@ -24,9 +24,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class visionProc {
 	private static final boolean bool = true;
-	private static final double initialDistance = bool ? 32.6 : 0;
-	private static final double initialHeight = bool ? 26.0 : 0;
-	private static final double initialWidth = bool ? 10.5 : 0;
+	private static final double initialDistance = bool ? 18.5 : 0;
+	private static final double initialHeight = bool ? 47.0 : 0;
+	private static final double initialWidth = bool ? 22.0 : 0;
 //	private static final double initialX = bool ? 39.5 : 0;
 //	private static final double initialGamma = bool ? ((-5.0)*Math.PI)/180.0 : ((0.0)*Math.PI)/180.0;
 	private threadOut gotten;
@@ -100,7 +100,7 @@ public class visionProc {
 							nestedTemp.x = (jprime.tl().x + jprime.br().x)/2;
 							nestedTemp.y = (jprime.tl().y + jprime.br().y)/2;
 							nestedTemp.frameWidth = mat.width();
-							Imgproc.rectangle(mat, jprime.br(), jprime.tl(), new Scalar(255, 0, 0), 1);
+							Imgproc.rectangle(mat, jprime.br(), jprime.tl(), new Scalar(0.0, 0.0, 255.0), 1);
 							temp.secondValue = nestedTemp;
 							temp.hasSecond = true;
 						}
