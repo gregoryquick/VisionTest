@@ -39,9 +39,9 @@ public class SimpleEX implements Pipe {
 	public void process(Mat source0) {
 		// Step HSV_Threshold0:
 		Mat hsvThresholdInput = source0;
-		double[] hsvThresholdHue = {54.0, 110.0};
-		double[] hsvThresholdSaturation = {159.0, 255.0};
-		double[] hsvThresholdValue = {156.0, 255.0};
+		double[] hsvThresholdHue = {47.48202043471577, 101.16041736798078};
+		double[] hsvThresholdSaturation = {77.96762808621358, 255.0};
+		double[] hsvThresholdValue = {87.14028776978417, 255.0};
 		hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, hsvThresholdOutput);
 
 		// Step Find_Contours0:

@@ -3,6 +3,8 @@ package org.usfirst.frc.team948.robot;
 import org.usfirst.frc.team948.robot.commands.DriveStraightDistance;
 import org.usfirst.frc.team948.robot.commands.ManualDrive;
 import org.usfirst.frc.team948.robot.commands.ManualDriveStraight;
+import org.usfirst.frc.team948.robot.commands.VisionDriveCommandOne;
+import org.usfirst.frc.team948.robot.commands.VisionDriveCommandTwo;
 import org.usfirst.frc.team948.robot.subsystems.Drive;
 
 import edu.wpi.cscore.UsbCamera;
@@ -39,6 +41,8 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("ManualDrive", new ManualDrive());
 		SmartDashboard.putData("DriveStraight", new ManualDriveStraight());
 		SmartDashboard.putData("DriveStraight 5 feet", new DriveStraightDistance(60.0, Drive.Direction.FORWARD));
+		SmartDashboard.putData("Drive With Vision One", new VisionDriveCommandOne(0.3, proccesor, true));
+		SmartDashboard.putData("Drive With Vision Two", new VisionDriveCommandTwo(0.3, proccesor, true));
 	}
 
 	public void teleopPeriodic() {
@@ -55,16 +59,17 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("rightEncoder", robotMap.rightEncoder.get());
 		SmartDashboard.putNumber("Yaw", robotMap.navx.getAngle());
 		SmartDashboard.putNumber("Time", clock.get());
-		if (proccesor.dataExists()) {
-			SmartDashboard.putBoolean("NoDataOut", false);
-			visionField data = proccesor.getData();
-			SmartDashboard.putNumber("Theta", (data.theta * 180.0) / Math.PI);
-			SmartDashboard.putNumber("V", data.v);
-			SmartDashboard.putNumber("Gamma", (data.gamma * 180.0) / Math.PI);
-			SmartDashboard.putNumber("Zeta", data.zeta);
-			SmartDashboard.putNumber("Omega", data.omega);
-		} else {
-			SmartDashboard.putBoolean("NoDataOut", true);
-		}
+		//DO NOT UNCOMMENT THIS CODE
+//		if (proccesor.dataExists()) {
+//			SmartDashboard.putBoolean("NoDataOut", false);
+//			visionField data = proccesor.getData();
+//			SmartDashboard.putNumber("Theta", (data.theta * 180.0) / Math.PI);
+//			SmartDashboard.putNumber("V", data.v);
+//			SmartDashboard.putNumber("Gamma", (data.gamma * 180.0) / Math.PI);
+//			SmartDashboard.putNumber("Zeta", data.zeta);
+//			SmartDashboard.putNumber("Omega", data.omega);
+//		} else {
+//			SmartDashboard.putBoolean("NoDataOut", true);
+//		}
 	}
 }

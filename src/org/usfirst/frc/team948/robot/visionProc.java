@@ -114,7 +114,7 @@ public class visionProc {
 				}
 				vidOut.putFrame(mat);
 			}
-		}, 0, 10);
+		}, 0, 40);
 		return this;
 	}
 	
