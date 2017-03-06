@@ -2,6 +2,7 @@ package org.usfirst.frc.team948.robot.commands;
 import org.usfirst.frc.team948.robot.OI;
 import org.usfirst.frc.team948.robot.Robot;
 import org.usfirst.frc.team948.robot.RobotMap;
+import org.usfirst.frc.team948.utilities.MathUtil;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -19,7 +20,7 @@ public class ManualDriveStraight extends Command {
 	
 	@Override 
 	protected void execute(){
-		Robot.drive.driveOnHeading(-OI.leftJoystick.getY(), desiredHeading);
+		Robot.drive.driveOnHeading(MathUtil.clamp(-OI.leftJoystick.getY(), -0.6, 0.6), desiredHeading);
 	}
 	
 	@Override

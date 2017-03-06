@@ -84,7 +84,7 @@ public class VisionDriveCommandTwo extends Command {
 		if(!noneDetected){
 			new CommandGroup(){{
 				addSequential(new Turn(gamma));
-				addSequential(new DriveStraightDistance(distance, direction, power));
+				addSequential(new DriveStraightDistance(distance, direction, 1.0));
 			}}.start();
 		}
 	}

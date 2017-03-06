@@ -24,9 +24,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class visionProc {
 	private static final boolean bool = true;
-	private static final double initialDistance = bool ? 18.5 : 0;
-	private static final double initialHeight = bool ? 47.0 : 0;
-	private static final double initialWidth = bool ? 22.0 : 0;
+	private static final double initialDistance = bool ? 34.7 : 34.7;
+	private static final double initialHeight = bool ? 25.0 : 50.0;
+	private static final double initialWidth = bool ? 10.0 : 21.0;
 //	private static final double initialX = bool ? 39.5 : 0;
 //	private static final double initialGamma = bool ? ((-5.0)*Math.PI)/180.0 : ((0.0)*Math.PI)/180.0;
 	private threadOut gotten;
@@ -47,9 +47,9 @@ public class visionProc {
 		lastOut = new visionField();
 		threadObjectData = new threadOut();
 		cvSink = CameraServer.getInstance().getVideo();
-		vidOut = CameraServer.getInstance().putVideo("Processed", 640, 480);
+		vidOut = CameraServer.getInstance().putVideo("Processed", Robot.Camera_Width, Robot.Camera_Height);
 		mat = new Mat();
-		pipeLine = bool ? new SimpleEX() : new HSimpleEX();
+		pipeLine = bool ? new SimpleEX() : new SimpleEX();
 		proccessingTimer = new Timer();
 		proccessingTimer.schedule(new TimerTask(){
 			@Override
@@ -123,6 +123,7 @@ public class visionProc {
 			double H = in.rectHeight;
 			return (initialHeight*initialDistance)/H;
 		}
+		System.out.println("preVNull:" + System.currentTimeMillis());
 		return (Double) null;
 	}
 	
@@ -132,7 +133,10 @@ public class visionProc {
 				double W = in.rectWidth;
 				double H = in.rectHeight;
 				double uW = (H/initialHeight)*initialWidth;
-				double theta = Math.acos(W/uW);
+				double correctedRatio = Math.min(1.0, W/uW);
+				double theta = Math.acos(correctedRatio);
+				SmartDashboard.putNumber("WOveruW", W/uW);
+				SmartDashboard.putBoolean("inArcCosRange", Math.abs(W/uW) <= 1.0);
 				theta = Math.copySign(theta,in.x - in.secondValue.x);
 				return theta;
 			}
@@ -140,9 +144,13 @@ public class visionProc {
 			double W = in.rectWidth;
 			double H = in.rectHeight;
 			double uW = (H/initialHeight)*initialWidth;
-			double theta = Math.acos(W/uW);
+			SmartDashboard.putNumber("WOveruW", W/uW);
+			SmartDashboard.putBoolean("inArcCosRange", Math.abs(W/uW) <= 1.0);
+			double correctedRatio = Math.min(1.0, W/uW);
+			double theta = Math.acos(correctedRatio);
 			return theta;
 		}
+		System.out.println("ThetaNull:" + System.currentTimeMillis());
 		return (Double) null;
 	}
 	
@@ -154,9 +162,10 @@ public class visionProc {
 			}
 		}else if(in.hasData){
 			double closestDistance = rectDistance(in);
-			double W = in.rectWidth;
+			double W = (initialWidth*initialDistance)/closestDistance;
 			return closestDistance + (Math.tan(theta)*(W/2.0));
 		}
+		System.out.println("VNull:" + System.currentTimeMillis());
 		return (Double) null;
 	}
 	
@@ -180,6 +189,7 @@ public class visionProc {
 			double gamma = Math.atan((epsilon*2.0)/(initialDistance*initialWidth));
 			return gamma;
 		}
+		System.out.println("GammaNull:" + System.currentTimeMillis());
 		return (Double) null;
 	}
 	
@@ -199,6 +209,7 @@ public class visionProc {
 			double zeta = epsilon/(wF/2.0);
 			return zeta;
 		}
+		System.out.println("ZetaNull:" + System.currentTimeMillis());
 		return (Double) null;
 	}
 	
@@ -222,6 +233,7 @@ public class visionProc {
 			double omega = (centerDistance*epsilon*2.0)/(initialDistance*initialWidth);
 			return omega;
 		}
+		System.out.println("OmegaNull:" + System.currentTimeMillis());
 		return (Double) null;
 	}
 	
@@ -240,7 +252,7 @@ public class visionProc {
 			if(temp.hasSecond){
 				SmartDashboard.putNumber("visionArea2",temp.area);
 				SmartDashboard.putNumber("visionFrameWidth2",temp.frameWidth);
-				SmartDashboard.putNumber("visionRectHeight2",temp.rectHeight);
+				SmartDashboard.putNumber("visionfRectHeight2",temp.rectHeight);
 				SmartDashboard.putNumber("visionRectWidth2",temp.rectWidth);
 				SmartDashboard.putNumber("visionX2",temp.x);
 				SmartDashboard.putNumber("visionY2",temp.y);

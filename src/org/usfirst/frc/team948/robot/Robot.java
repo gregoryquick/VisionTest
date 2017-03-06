@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * processing.
  */
 public class Robot extends IterativeRobot {
+	public static final int Camera_Width = 160;
+	public static final int Camera_Height = 120;
 	private static visionProc proccesor;
 	private static Timer clock = new Timer();
 	public final double tickDistance = 30;
@@ -38,6 +40,7 @@ public class Robot extends IterativeRobot {
 		OI.buttonInit();
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 		camera.setExposureManual(-11);
+		camera.setResolution(Camera_Width, Camera_Height);
 		proccesor = new visionProc().start();
 		SmartDashboard.putNumber("Time", clock.get());
 		SmartDashboard.putData("ManualDrive", new ManualDrive());
@@ -45,8 +48,8 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("DriveStraight 5 feet", new DriveStraightDistance(60.0, Drive.Direction.FORWARD));
 		SmartDashboard.putData("Drive With Vision One", new VisionDriveCommandOne(0.3, proccesor, true));
 		SmartDashboard.putData("Drive With Vision Two", new VisionDriveCommandTwo(0.3, proccesor, true));
-		SmartDashboard.putData("Drive With Vision Three", new VisionDriveContOne(0.5, proccesor));
-		SmartDashboard.putData("Drive With Vision Four", new VisionDriveContTwo(0.5, proccesor));
+		SmartDashboard.putData("Drive With Vision Three", new VisionDriveContOne(0.3, proccesor));
+		SmartDashboard.putData("Drive With Vision Four", new VisionDriveContTwo(0.3, proccesor));
 	}
 
 	public void teleopPeriodic() {
@@ -64,16 +67,16 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Yaw", robotMap.navx.getAngle());
 		SmartDashboard.putNumber("Time", clock.get());
 		//DO NOT UNCOMMENT THIS CODE
-//		if (proccesor.dataExists()) {
-//			SmartDashboard.putBoolean("NoDataOut", false);
-//			visionField data = proccesor.getData();
-//			SmartDashboard.putNumber("Theta", (data.theta * 180.0) / Math.PI);
-//			SmartDashboard.putNumber("V", data.v);
-//			SmartDashboard.putNumber("Gamma", (data.gamma * 180.0) / Math.PI);
-//			SmartDashboard.putNumber("Zeta", data.zeta);
-//			SmartDashboard.putNumber("Omega", data.omega);
-//		} else {
-//			SmartDashboard.putBoolean("NoDataOut", true);
-//		}
+		if (proccesor.dataExists()) {
+			SmartDashboard.putBoolean("NoDataOut", false);
+			visionField data = proccesor.getData();
+			SmartDashboard.putNumber("Theta", (data.theta * 180.0) / Math.PI);
+			SmartDashboard.putNumber("V", data.v);
+			SmartDashboard.putNumber("Gamma", (data.gamma * 180.0) / Math.PI);
+			SmartDashboard.putNumber("Zeta", data.zeta);
+			SmartDashboard.putNumber("Omega", data.omega);
+		} else {
+			SmartDashboard.putBoolean("NoDataOut", true);
+		}
 	}
 }

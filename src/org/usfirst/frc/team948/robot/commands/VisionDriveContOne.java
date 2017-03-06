@@ -14,20 +14,36 @@ public class VisionDriveContOne extends Command {
 	private double desiredHeading;
 	private double power;
 	private final double slowingDistance = 10.0;
-	private final double stopDistance = 30.0;
+	private final double stopDistance;
 	private visionProc proccesor;
 	private visionField field = null;
+	private final boolean bool;
 	public VisionDriveContOne(double power, visionProc proccesor) {
 		this.power = power;
+		bool = false;
+		this.stopDistance = 15.0;
 		this.proccesor = proccesor;
+		
 		requires(Robot.drive);
 	}
+	
+//	public VisionDriveContOne(double power, visionProc proccesor, double stopDistance) {
+//		this.power = power;
+//		this.stopDistance = stopDistance;
+//		this.proccesor = proccesor;
+//		requires(Robot.drive);
+//	}
 
 	@Override 
 	protected void initialize() {
 		if(proccesor.dataExists()){
 			field = proccesor.getData();
-			desiredHeading = RobotMap.continuousGyro.getAngle() + Math.toDegrees(field.gamma);
+			desiredHeading = RobotMap.continuousGyro.getAngle();
+//			double offsetAngleCorrection = Math.toDegrees(field.gamma);
+//			offsetAngleCorrection *= Math.abs(Math.toDegrees(field.gamma)) <= 1 ? 2.0 : Math.max(7.0/(1.0+(1.0/Math.exp(Math.abs(Math.toDegrees(field.gamma))-10.0))),0.15);
+			double offsetAngleCorrection = Math.copySign((15.0*(field.v/stopDistance))/(1.0+(1.0/Math.exp(Math.abs(Math.toDegrees(field.gamma))-10.0))),field.gamma);
+			desiredHeading += offsetAngleCorrection;
+			desiredHeading += 1.0;
 			Robot.drive.driveOnHeadingInit(desiredHeading);
 		}
 	} 
@@ -46,7 +62,7 @@ public class VisionDriveContOne extends Command {
 			currentPower = Math.max(currentPower, .3);
 			Robot.drive.driveOnHeading(currentPower, desiredHeading);
 		}else{
-			Robot.drive.stop();
+//			Robot.drive.stop();
 		}
 	}
 	
@@ -63,7 +79,7 @@ public class VisionDriveContOne extends Command {
 		if(!field.equals(null)){
 			Robot.drive.driveOnHeadingEnd();
 			new CommandGroup(){{
-					addSequential(new DriveStraightDistance(stopDistance - (5.0*slowingDistance), Direction.FORWARD));
+					addSequential(new DriveStraightDistance(stopDistance - (5.0*(stopDistance/slowingDistance)), Direction.FORWARD));
 				}}.start();
 		}
 	}

@@ -5,21 +5,27 @@ import org.usfirst.frc.team948.robot.RobotMap;
 import org.usfirst.frc.team948.robot.visionField;
 import org.usfirst.frc.team948.robot.visionProc;
 import org.usfirst.frc.team948.robot.subsystems.Drive.Direction;
+import org.usfirst.frc.team948.utilities.MathUtil;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionDriveContTwo extends Command {
-	private double desiredHeading;
+	private double desiredHeadingOffset;
+	private double lastHeadingOffset;
 	private double power;
 	private final double slowingDistance = 10.0;
-	private final double stopDistance = 40.0;
+	private final double stopDistance;
 	private visionProc proccesor;
 	private visionField field = null;
+	private final boolean bool;
 	public VisionDriveContTwo(double power, visionProc proccesor) {
 		this.power = power;
+		bool = false;
+		this.stopDistance = 20.0;
 		this.proccesor = proccesor;
+		
 		requires(Robot.drive);
 	}
 
@@ -27,8 +33,9 @@ public class VisionDriveContTwo extends Command {
 	protected void initialize() {
 		if(proccesor.dataExists()){
 			field = proccesor.getData();
-			desiredHeading = RobotMap.continuousGyro.getAngle() + Math.toDegrees(field.gamma);
-			Robot.drive.driveOnHeadingInit(desiredHeading);
+			desiredHeadingOffset = 0.0;
+			lastHeadingOffset = desiredHeadingOffset;
+			Robot.drive.driveOnHeadingInit(desiredHeadingOffset);
 		}
 	} 
 	
@@ -36,17 +43,21 @@ public class VisionDriveContTwo extends Command {
 	protected void execute(){
 		if(proccesor.dataExists()){
 			field = proccesor.getData();
-			desiredHeading = RobotMap.continuousGyro.getAngle() + Math.toDegrees(field.gamma);
-//			double distanceCorrectionAngle = field.zeta*field.v*Math.tan(field.gamma);
-//			desiredHeading += distanceCorrectionAngle;
+			double offsetAngleCorrection = Math.copySign((15.0*(Math.sqrt(field.v)/stopDistance))/(1.0+(1.0/Math.exp(Math.abs(Math.toDegrees(field.gamma))-10.0))),field.gamma);
+			double slantCorrectionAngle = Math.copySign((10.0*(stopDistance/field.v))/(1.0+(1.0/Math.exp(Math.abs(Math.toDegrees(field.theta))-10.0))),field.theta);
+			desiredHeadingOffset = 0.0;
+			desiredHeadingOffset += offsetAngleCorrection;
+			desiredHeadingOffset += slantCorrectionAngle;
+			desiredHeadingOffset += 1.0;
 			double currentPower = power * Math.min(1.0,
 					Math.max(Math.abs(((field.v) - stopDistance)/(stopDistance + slowingDistance)),0.4));
-//			SmartDashboard.putNumber("Field V", (field.v));
-//			SmartDashboard.putNumber("Percent", Math.max(Math.abs(((field.v) - stopDistance)/(stopDistance + slowingDistance)),0.3));
+			SmartDashboard.putNumber("Field V", (field.v));
+			SmartDashboard.putNumber("Percent", Math.max(Math.abs(((field.v) - stopDistance)/(stopDistance + slowingDistance)),0.3));
 			currentPower = Math.max(currentPower, .3);
-			Robot.drive.driveOnHeading(currentPower, desiredHeading);
+			Robot.drive.driveOnHeading(currentPower, RobotMap.continuousGyro.getAngle() + desiredHeadingOffset);
+			lastHeadingOffset = desiredHeadingOffset;
 		}else{
-			Robot.drive.stop();
+//			Robot.drive.stop();
 		}
 	}
 	
@@ -63,7 +74,7 @@ public class VisionDriveContTwo extends Command {
 		if(!field.equals(null)){
 			Robot.drive.driveOnHeadingEnd();
 			new CommandGroup(){{
-//					addSequential(new DriveStraightDistance(stopDistance - (5.0*slowingDistance), Direction.FORWARD));
+					addSequential(new DriveStraightDistance(stopDistance - (5.0*(stopDistance/slowingDistance)), Direction.FORWARD));
 				}}.start();
 		}
 	}
