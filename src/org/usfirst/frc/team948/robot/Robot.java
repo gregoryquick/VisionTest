@@ -23,9 +23,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * processing.
  */
 public class Robot extends IterativeRobot {
+	private static final boolean boooool = true;
 	public static final int Camera_Width = 160;
 	public static final int Camera_Height = 120;
-	private static visionProc proccesor;
+	static visionproccesor proccesor;
 	private static Timer clock = new Timer();
 	public final double tickDistance = 30;
 	public static OI oi;
@@ -41,7 +42,7 @@ public class Robot extends IterativeRobot {
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 		camera.setExposureManual(-11);
 		camera.setResolution(Camera_Width, Camera_Height);
-		proccesor = new visionProc().start();
+		proccesor = boooool ? new visionProc().start() : new NewVisionProc().start();
 		SmartDashboard.putNumber("Time", clock.get());
 		SmartDashboard.putData("ManualDrive", new ManualDrive());
 		SmartDashboard.putData("DriveStraight", new ManualDriveStraight());
@@ -66,17 +67,19 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("rightEncoder", robotMap.rightEncoder.get());
 		SmartDashboard.putNumber("Yaw", robotMap.navx.getAngle());
 		SmartDashboard.putNumber("Time", clock.get());
+//		SmartDashboard.putNumber("Ultrasonic zero",(robotMap.ultrasoundone.getVoltage() - RobotMap.preferences.getDouble("ultra0add", 0.0255)) / RobotMap.preferences.getDouble("ultra0divide", 0.0242));
+//		SmartDashboard.putNumber("Ultrasonic one",(robotMap.ultrasoundtwo.getVoltage() - RobotMap.preferences.getDouble("ultra1add", 0.0255)) / RobotMap.preferences.getDouble("ultra1divide", 0.0242));
 		//DO NOT UNCOMMENT THIS CODE
-		if (proccesor.dataExists()) {
-			SmartDashboard.putBoolean("NoDataOut", false);
-			visionField data = proccesor.getData();
-			SmartDashboard.putNumber("Theta", (data.theta * 180.0) / Math.PI);
-			SmartDashboard.putNumber("V", data.v);
-			SmartDashboard.putNumber("Gamma", (data.gamma * 180.0) / Math.PI);
-			SmartDashboard.putNumber("Zeta", data.zeta);
-			SmartDashboard.putNumber("Omega", data.omega);
-		} else {
-			SmartDashboard.putBoolean("NoDataOut", true);
-		}
+//		if (proccesor.dataExists()) {
+//			SmartDashboard.putBoolean("NoDataOut", false);
+//			visionField data = proccesor.getData();
+//			SmartDashboard.putNumber("Theta", (data.theta * 180.0) / Math.PI);
+//			SmartDashboard.putNumber("V", data.v);
+//			SmartDashboard.putNumber("Gamma", (data.gamma * 180.0) / Math.PI);
+//			SmartDashboard.putNumber("Zeta", data.zeta);
+//			SmartDashboard.putNumber("Omega", data.omega);
+//		} else {
+//			SmartDashboard.putBoolean("NoDataOut", true);
+//		}
 	}
 }

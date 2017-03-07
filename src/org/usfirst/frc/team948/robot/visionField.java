@@ -22,4 +22,6 @@ public class visionField {
 	public double omega;
 	public double gamma;
 	public boolean isTape;
+	//Only sometimes used
+	public double distanceToTarget;
 }

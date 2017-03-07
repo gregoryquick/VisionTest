@@ -5,6 +5,7 @@ import org.usfirst.frc.team948.utilities.MeshedEncoders;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.SPI;
@@ -29,6 +30,8 @@ public class RobotMap {
 	public static AHRS navx = new AHRS(SPI.Port.kMXP);
 	public static ContinuousGyro continuousGyro = new ContinuousGyro(navx);
 	public static MeshedEncoders meshedEncoder;
+	public static AnalogInput ultrasoundone;
+	public static AnalogInput ultrasoundtwo;
 	public RobotMap(){
 		preferences = Preferences.getInstance();
 		frontLeftMotor =new Victor(frontLeftMotorPort);
@@ -38,5 +41,7 @@ public class RobotMap {
 		leftEncoder = new Encoder(leftEncoderPortOne, leftEncoderPortTwo, true);
 		rightEncoder = new Encoder(rightEncoderPortOne, rightEncoderPortTwo);
 		meshedEncoder = new MeshedEncoders(this);
+		ultrasoundone = new AnalogInput(0);
+		ultrasoundtwo = new AnalogInput(1);
 	}
 }

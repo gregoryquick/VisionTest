@@ -4,6 +4,7 @@ import org.usfirst.frc.team948.robot.Robot;
 import org.usfirst.frc.team948.robot.RobotMap;
 import org.usfirst.frc.team948.robot.visionField;
 import org.usfirst.frc.team948.robot.visionProc;
+import org.usfirst.frc.team948.robot.visionproccesor;
 import org.usfirst.frc.team948.robot.subsystems.Drive.Direction;
 
 import edu.wpi.first.wpilibj.command.Command;
@@ -15,10 +16,10 @@ public class VisionDriveContOne extends Command {
 	private double power;
 	private final double slowingDistance = 10.0;
 	private final double stopDistance;
-	private visionProc proccesor;
+	private visionproccesor proccesor;
 	private visionField field = null;
 	private final boolean bool;
-	public VisionDriveContOne(double power, visionProc proccesor) {
+	public VisionDriveContOne(double power, visionproccesor proccesor) {
 		this.power = power;
 		bool = false;
 		this.stopDistance = 15.0;
