@@ -2,9 +2,9 @@ package org.usfirst.frc.team948.robot.commands;
 import org.usfirst.frc.team948.robot.OI;
 import org.usfirst.frc.team948.robot.Robot;
 import org.usfirst.frc.team948.robot.RobotMap;
+import org.usfirst.frc.team948.robot.VisionProccesor;
 import org.usfirst.frc.team948.robot.visionField;
 import org.usfirst.frc.team948.robot.visionProc;
-import org.usfirst.frc.team948.robot.visionproccesor;
 import org.usfirst.frc.team948.robot.subsystems.Drive.Direction;
 import org.usfirst.frc.team948.utilities.MathUtil;
 
@@ -18,10 +18,10 @@ public class VisionDriveContTwo extends Command {
 	private double power;
 	private final double slowingDistance = 10.0;
 	private final double stopDistance;
-	private visionproccesor proccesor;
+	private VisionProccesor proccesor;
 	private visionField field = null;
 	private final boolean bool;
-	public VisionDriveContTwo(double power, visionproccesor proccesor) {
+	public VisionDriveContTwo(double power, VisionProccesor proccesor) {
 		this.power = power;
 		bool = false;
 		this.stopDistance = 20.0;

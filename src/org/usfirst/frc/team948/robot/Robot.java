@@ -26,7 +26,7 @@ public class Robot extends IterativeRobot {
 	private static final boolean boooool = true;
 	public static final int Camera_Width = 160;
 	public static final int Camera_Height = 120;
-	static visionproccesor proccesor;
+	static VisionProccesor proccesor;
 	private static Timer clock = new Timer();
 	public final double tickDistance = 30;
 	public static OI oi;
