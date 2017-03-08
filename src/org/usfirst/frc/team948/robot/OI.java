@@ -1,5 +1,6 @@
 package org.usfirst.frc.team948.robot;
 
+import org.usfirst.frc.team948.robot.commands.BallShooter;
 import org.usfirst.frc.team948.robot.commands.ManualDrive;
 import org.usfirst.frc.team948.robot.commands.ManualDriveStraight;
 import org.usfirst.frc.team948.robot.commands.ResetSensors;
@@ -42,6 +43,7 @@ public class OI {
 	public static Joystick leftJoystick= new Joystick (0);
 	public static Joystick rightJoystick = new Joystick (1);
 	public static Button leftTrigger = new JoystickButton(leftJoystick, 1);
+	public static Button rightTrigger = new JoystickButton(rightJoystick, 1);
 	public static JoystickButton resetSensorsButton = new JoystickButton(leftJoystick, 11);
 
 	
@@ -50,6 +52,7 @@ public class OI {
 		resetSensorsButton.whenPressed(new ResetSensors());
 		leftTrigger.whenPressed(new ManualDriveStraight());
 		leftTrigger.whenReleased(new ManualDrive());
+		rightTrigger.whileHeld(new BallShooter());
 		//rightTrigger.whileHeld(command);
 	}
 }

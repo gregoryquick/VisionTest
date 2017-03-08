@@ -7,7 +7,9 @@ import org.usfirst.frc.team948.robot.commands.VisionDriveCommandOne;
 import org.usfirst.frc.team948.robot.commands.VisionDriveCommandTwo;
 import org.usfirst.frc.team948.robot.commands.VisionDriveContOne;
 import org.usfirst.frc.team948.robot.commands.VisionDriveContTwo;
+import org.usfirst.frc.team948.robot.subsystems.CameraLight;
 import org.usfirst.frc.team948.robot.subsystems.Drive;
+import org.usfirst.frc.team948.robot.subsystems.Shooter;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
@@ -23,7 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * processing.
  */
 public class Robot extends IterativeRobot {
-	private static final boolean boooool = true;
+	private static final boolean toggleVisionTest = true;
 	public static final int Camera_Width = 160;
 	public static final int Camera_Height = 120;
 	static VisionProccesor proccesor;
@@ -32,7 +34,8 @@ public class Robot extends IterativeRobot {
 	public static OI oi;
 	public static Drive drive;
 	public static RobotMap robotMap;
-
+	public static final CameraLight cameraLight = new CameraLight();
+	public static final Shooter shooter = new Shooter();
 	@Override
 	public void robotInit() {
 		clock.start();
@@ -42,7 +45,7 @@ public class Robot extends IterativeRobot {
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 		camera.setExposureManual(-11);
 		camera.setResolution(Camera_Width, Camera_Height);
-		proccesor = boooool ? new visionProc().start() : new NewVisionProc().start();
+		proccesor = toggleVisionTest ? new visionProc().start() : new NewVisionProc().start();
 		SmartDashboard.putNumber("Time", clock.get());
 		SmartDashboard.putData("ManualDrive", new ManualDrive());
 		SmartDashboard.putData("DriveStraight", new ManualDriveStraight());
@@ -67,6 +70,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("rightEncoder", robotMap.rightEncoder.get());
 		SmartDashboard.putNumber("Yaw", robotMap.navx.getAngle());
 		SmartDashboard.putNumber("Time", clock.get());
+		SmartDashboard.putNumber("shooterEncoder", robotMap.shooterEncoder.get());
 //		SmartDashboard.putNumber("Ultrasonic zero",(robotMap.ultrasoundone.getVoltage() - RobotMap.preferences.getDouble("ultra0add", 0.0255)) / RobotMap.preferences.getDouble("ultra0divide", 0.0242));
 //		SmartDashboard.putNumber("Ultrasonic one",(robotMap.ultrasoundtwo.getVoltage() - RobotMap.preferences.getDouble("ultra1add", 0.0255)) / RobotMap.preferences.getDouble("ultra1divide", 0.0242));
 		//DO NOT UNCOMMENT THIS CODE
