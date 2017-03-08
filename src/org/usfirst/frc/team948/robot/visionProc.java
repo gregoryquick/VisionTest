@@ -22,7 +22,7 @@ import java.util.TimerTask;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class visionProc implements VisionProccesor{
+public class visionProc implements visionproccesor{
 	private static final boolean bool = true;
 	private static final double initialDistance = bool ? 34.7 : 34.7;
 	private static final double initialHeight = bool ? 25.0 : 50.0;

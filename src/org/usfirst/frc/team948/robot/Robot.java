@@ -7,7 +7,6 @@ import org.usfirst.frc.team948.robot.commands.VisionDriveCommandOne;
 import org.usfirst.frc.team948.robot.commands.VisionDriveCommandTwo;
 import org.usfirst.frc.team948.robot.commands.VisionDriveContOne;
 import org.usfirst.frc.team948.robot.commands.VisionDriveContTwo;
-import org.usfirst.frc.team948.robot.subsystems.CameraLight;
 import org.usfirst.frc.team948.robot.subsystems.Drive;
 import org.usfirst.frc.team948.robot.subsystems.Shooter;
 
@@ -28,13 +27,12 @@ public class Robot extends IterativeRobot {
 	private static final boolean toggleVisionTest = true;
 	public static final int Camera_Width = 160;
 	public static final int Camera_Height = 120;
-	static VisionProccesor proccesor;
+	static visionproccesor proccesor;
 	private static Timer clock = new Timer();
 	public final double tickDistance = 30;
 	public static OI oi;
 	public static Drive drive;
 	public static RobotMap robotMap;
-	public static final CameraLight cameraLight = new CameraLight();
 	public static final Shooter shooter = new Shooter();
 	@Override
 	public void robotInit() {
