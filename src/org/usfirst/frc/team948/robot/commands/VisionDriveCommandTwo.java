@@ -4,7 +4,7 @@ import org.usfirst.frc.team948.robot.Robot;
 import org.usfirst.frc.team948.robot.RobotMap;
 import org.usfirst.frc.team948.robot.visionField;
 import org.usfirst.frc.team948.robot.visionProc;
-import org.usfirst.frc.team948.robot.visionproccesor;
+import org.usfirst.frc.team948.robot.VisionProccesor;
 import org.usfirst.frc.team948.robot.subsystems.Drive;
 import org.usfirst.frc.team948.robot.subsystems.Drive.Direction;
 import org.usfirst.frc.team948.utilities.PreferenceKeys;
@@ -30,7 +30,7 @@ public class VisionDriveCommandTwo extends Command {
 	private double encoderLeftStart;
 	private double encoderRightStart;
 
-	private visionproccesor proccesor;
+	private VisionProccesor proccesor;
 	
 	private double ticksToTravel;
 	private boolean noneDetected = false;
@@ -42,7 +42,7 @@ public class VisionDriveCommandTwo extends Command {
 
 	private Direction direction;
 	
-	public VisionDriveCommandTwo(double DEPRECATEDdistance,double power, visionproccesor proccesor, boolean setHeading) {
+	public VisionDriveCommandTwo(double DEPRECATEDdistance,double power, VisionProccesor proccesor, boolean setHeading) {
 		this.direction = direction.FORWARD;
 		this.proccesor = proccesor;
 		this.power = Math.abs(power);
@@ -50,15 +50,15 @@ public class VisionDriveCommandTwo extends Command {
 		this.setHeading = setHeading;
 	}
 
-	public VisionDriveCommandTwo(double power, visionproccesor proccesor, boolean setHeading) {
+	public VisionDriveCommandTwo(double power, VisionProccesor proccesor, boolean setHeading) {
 		this(0.0, power, proccesor, setHeading);
 	}
 
-	public VisionDriveCommandTwo(visionproccesor proccesor, boolean setHeading) {
+	public VisionDriveCommandTwo(VisionProccesor proccesor, boolean setHeading) {
 		this(0.0, proccesor, setHeading);
 	}
 	
-	public VisionDriveCommandTwo(visionproccesor proccesor) {
+	public VisionDriveCommandTwo(VisionProccesor proccesor) {
 		this(0.0, proccesor, true);
 	}
 

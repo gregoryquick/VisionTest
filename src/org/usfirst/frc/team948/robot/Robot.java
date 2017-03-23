@@ -52,10 +52,10 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("ManualDrive", new ManualDrive());
 		SmartDashboard.putData("DriveStraight", new ManualDriveStraight());
 		SmartDashboard.putData("DriveStraight 5 feet", new DriveStraightDistance(60.0, Drive.Direction.FORWARD));
-		SmartDashboard.putData("Drive With Vision One", new VisionDriveCommandOne(0.3, proccesor, true));
-		SmartDashboard.putData("Drive With Vision Two", new VisionDriveCommandTwo(0.3, proccesor, true));
-		SmartDashboard.putData("Drive With Vision Three", new VisionDriveContOne(0.3, proccesor));
-		SmartDashboard.putData("Drive With Vision Four", new VisionDriveContTwo(0.3, proccesor));
+//		SmartDashboard.putData("Drive With Vision One", new VisionDriveCommandOne(0.3, proccesor, true));
+//		SmartDashboard.putData("Drive With Vision Two", new VisionDriveCommandTwo(0.3, proccesor, true));
+//		SmartDashboard.putData("Drive With Vision Three", new VisionDriveContOne(0.3, proccesor));
+//		SmartDashboard.putData("Drive With Vision Four", new VisionDriveContTwo(0.3, proccesor));
 		SmartDashboard.putData("Drive spline to (-10,20)", new PathFollowOne(new Point2D(-10,20)));
 		SmartDashboard.putData("Drive strait to (10, 20)",new DriveStraitToFieldPosition(new Point2D(10.0,20)));
 	}
