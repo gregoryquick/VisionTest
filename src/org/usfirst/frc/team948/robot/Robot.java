@@ -1,13 +1,17 @@
 package org.usfirst.frc.team948.robot;
 
 import org.usfirst.frc.team948.robot.commands.DriveStraightDistance;
+import org.usfirst.frc.team948.robot.commands.DriveStraitToFieldPosition;
 import org.usfirst.frc.team948.robot.commands.ManualDrive;
 import org.usfirst.frc.team948.robot.commands.ManualDriveStraight;
+import org.usfirst.frc.team948.robot.commands.PathFollowOne;
 import org.usfirst.frc.team948.robot.commands.VisionDriveCommandOne;
 import org.usfirst.frc.team948.robot.commands.VisionDriveCommandTwo;
 import org.usfirst.frc.team948.robot.commands.VisionDriveContOne;
 import org.usfirst.frc.team948.robot.commands.VisionDriveContTwo;
 import org.usfirst.frc.team948.robot.subsystems.Drive;
+import org.usfirst.frc.team948.utilities.Point2D;
+import org.usfirst.frc.team948.utilities.PositionTracker;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
@@ -32,6 +36,7 @@ public class Robot extends IterativeRobot {
 	public static OI oi;
 	public static Drive drive;
 	public static RobotMap robotMap;
+	public static PositionTracker positionTracker = new PositionTracker();
 
 	@Override
 	public void robotInit() {
@@ -51,11 +56,17 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Drive With Vision Two", new VisionDriveCommandTwo(0.3, proccesor, true));
 		SmartDashboard.putData("Drive With Vision Three", new VisionDriveContOne(0.3, proccesor));
 		SmartDashboard.putData("Drive With Vision Four", new VisionDriveContTwo(0.3, proccesor));
+		SmartDashboard.putData("Drive spline to (-10,20)", new PathFollowOne(new Point2D(-10,20)));
+		SmartDashboard.putData("Drive strait to (10, 20)",new DriveStraitToFieldPosition(new Point2D(10.0,20)));
 	}
 
 	public void teleopPeriodic() {
 		periodicAll();
 		Scheduler.getInstance().run();
+	}
+	
+	public void disabledInit(){
+		positionTracker.reset();
 	}
 
 	public void disabledPeriodic() {

@@ -78,7 +78,7 @@ public class DriveStraightDistance extends Command {
 
 	@Override
 	protected void end() {
-		Robot.drive.driveOnHeadingEnd();
+		Robot.drive.driveOnHeadingEnd(true);
 	}
 
 	@Override

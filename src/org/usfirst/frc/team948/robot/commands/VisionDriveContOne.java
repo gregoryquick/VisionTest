@@ -78,7 +78,7 @@ public class VisionDriveContOne extends Command {
 	@Override 
 	protected void end() {
 		if(!field.equals(null)){
-			Robot.drive.driveOnHeadingEnd();
+			Robot.drive.driveOnHeadingEnd(true);
 			new CommandGroup(){{
 					addSequential(new DriveStraightDistance(stopDistance - (5.0*(stopDistance/slowingDistance)), Direction.FORWARD));
 				}}.start();
@@ -87,6 +87,6 @@ public class VisionDriveContOne extends Command {
 	
 	@Override 
 	protected void interrupted() {
-		Robot.drive.driveOnHeadingEnd();
+		Robot.drive.driveOnHeadingEnd(true);
 	}
 }

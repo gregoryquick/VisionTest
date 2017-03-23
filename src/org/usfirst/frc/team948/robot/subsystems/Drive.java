@@ -129,11 +129,12 @@ public class Drive extends Subsystem implements PIDOutput {
 		tankDrive(pL, pR);
 	}
 
-	public void driveOnHeadingEnd() {
+	public void driveOnHeadingEnd(boolean stop) {
 		drivePID.reset();
 		drivePID.free();
 		PIDOutput = 0;
-		stop();
+		if(stop)
+			stop();
 	}
 
 	public void tankDrive(double leftPower, double rightPower) {
