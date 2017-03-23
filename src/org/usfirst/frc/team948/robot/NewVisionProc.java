@@ -19,7 +19,7 @@ import edu.wpi.cscore.CvSource;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class NewVisionProc implements VisionProccesor {
+public class NewVisionProc implements visionproccesor {
 	private static final Scalar WHITE_COLOR = new Scalar(255, 255, 255);
 	private static final Scalar BLUE_COLOR = new Scalar(255, 0, 0);
 	private static final double TAPE_HEIGHT_INCHES = 5;

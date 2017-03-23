@@ -1,6 +1,6 @@
 package org.usfirst.frc.team948.robot;
 
-public interface visionproccesor {
+public interface VisionProccesor {
 	
 	public boolean dataExists();
 	
