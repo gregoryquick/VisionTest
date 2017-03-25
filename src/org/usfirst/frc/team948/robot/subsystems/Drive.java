@@ -179,9 +179,11 @@ public class Drive extends Subsystem implements PIDOutput {
 	}
 
 	public void driveOnHeadingEnd(boolean stop) {
-		drivePID.reset();
-		drivePID.free();
-		PIDOutput = 0;
+		if(drivePID != null){
+			drivePID.reset();
+			drivePID.free();
+			PIDOutput = 0;
+		}
 		if(stop){
 			stop();
 		}

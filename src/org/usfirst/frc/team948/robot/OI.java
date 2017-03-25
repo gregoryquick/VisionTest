@@ -2,7 +2,10 @@ package org.usfirst.frc.team948.robot;
 
 import org.usfirst.frc.team948.robot.commands.ManualDrive;
 import org.usfirst.frc.team948.robot.commands.ManualDriveStraight;
+import org.usfirst.frc.team948.robot.commands.PathFollowThree;
+import org.usfirst.frc.team948.robot.commands.PathFollowTwo;
 import org.usfirst.frc.team948.robot.commands.ResetSensors;
+import org.usfirst.frc.team948.utilities.Point2D;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
@@ -42,6 +45,7 @@ public class OI {
 	public static Joystick leftJoystick= new Joystick (0);
 	public static Joystick rightJoystick = new Joystick (1);
 	public static Button leftTrigger = new JoystickButton(leftJoystick, 1);
+	public static Button rightTrigger = new JoystickButton(rightJoystick, 1);
 	public static JoystickButton resetSensorsButton = new JoystickButton(leftJoystick, 11);
 
 	
@@ -50,6 +54,8 @@ public class OI {
 		resetSensorsButton.whenPressed(new ResetSensors());
 		leftTrigger.whenPressed(new ManualDriveStraight());
 		leftTrigger.whenReleased(new ManualDrive());
+		Point2D[] tmp = {new Point2D(-48.0,100.0),new Point2D(-48.0,120.0)};
+		rightTrigger.whenPressed(new PathFollowThree(tmp));
 		//rightTrigger.whileHeld(command);
 	}
 }

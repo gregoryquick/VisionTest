@@ -61,7 +61,7 @@ public class Robot extends IterativeRobot {
 //		SmartDashboard.putData("Drive With Vision Two", new VisionDriveCommandTwo(0.3, proccesor, true));
 //		SmartDashboard.putData("Drive With Vision Three", new VisionDriveContOne(0.3, proccesor));
 //		SmartDashboard.putData("Drive With Vision Four", new VisionDriveContTwo(0.3, proccesor));
-		SmartDashboard.putData("Drive spline to place", new PathFollowTwo(new Point2D(120.0,240.0),0.0));
+		SmartDashboard.putData("Drive spline to place", new PathFollowTwo(new Point2D(-48.0,120.0),0.0));
 		SmartDashboard.putData("Drive Composite 5 feet", new CompositeDriveStrait5Feet());
 		SmartDashboard.putData("Pose Change (-120, 240, 0.0)", new SimpleDriveToPose(new Point2D(-120.0,240.0), -1.0));
 		SmartDashboard.putData("Drive strait to (-24, 120)",new DriveStraitToFieldPosition(new Point2D(-24.0,120.0)));

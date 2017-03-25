@@ -21,13 +21,12 @@ public class PathFollowTwo extends Command {
 	private double fakeTimeStep;
 	private final double whealSeperationInches = 27.0;
 	private Point2D[] pathNodes = {new Point2D(0.0,0.0)};
-	private double[] startPose;
-	private Point2D endingLocation;
+	private Double previosHeadingDelta;
+	private final Point2D endingLocation;
 //	private final double tempSpeedNumber = 0.7;
 	private int index = 0;
 	private int maxIndex = 0;
-	private double headingAtEnd;
-	
+	private final double headingAtEnd;
 	private double minDistance = 1000000000000000000000.0;
 	
 	public PathFollowTwo(Point2D end, double finalHeading){
@@ -59,15 +58,16 @@ public class PathFollowTwo extends Command {
 			double[][] tempPathNodes = planner.smoothPath;
 //			double[][] tempPathNodes = planner.nodeOnlyPath;
 			pathNodes = new Point2D[tempPathNodes.length];
-			maxIndex = tempPathNodes.length - 1;
 			for(int i = 0; i < tempPathNodes.length;i++){
 				pathNodes[i] = new Point2D(tempPathNodes[i][0],tempPathNodes[i][1]);
 			}
+			maxIndex = pathNodes.length - 1;
 		} catch (Exception e) {
 			end();
 			e.printStackTrace();
 			return;
 		}
+//		Robot.drive.driveOnHeadingEnd(false);
 		Robot.drive.driveOnHeadingInit(RobotMap.continuousGyro.getAngle());
 	}
 	
@@ -83,90 +83,120 @@ public class PathFollowTwo extends Command {
 
 	@Override
 	protected void execute() {
-		Point2D currentLocation = new Point2D(Robot.positionTracker.getX(),Robot.positionTracker.getY());
-		Point2D nextTarget;
-		Point2D currentTarget;
-		if(index < maxIndex){
-			if(index > 0){
-				double distanceToPrev = distance(currentLocation,pathNodes[index - 1]);
-				double distanceToCurrent = distance(currentLocation, pathNodes[index]);
-				double distanceToNext = distance(currentLocation, pathNodes[index + 1]);
-				System.out.println("distanceToPrev:" + distanceToPrev);
-				System.out.println("distanceToCurrent:" + distanceToCurrent);
-				System.out.println("distanceToNext:" + distanceToNext);
-				if(distanceToNext < distanceToCurrent || minDistance < 0.3){
-					index++;
-					minDistance = 1000000000000000.0;
-				}else if(distanceToPrev < distanceToCurrent && distanceToCurrent > 10.0){
-					index--;
-					minDistance = 10000000000.0;
+		if (index < pathNodes.length) {
+			Point2D currentLocation = new Point2D(Robot.positionTracker.getX(), Robot.positionTracker.getY());
+			Point2D nextTarget;
+			Point2D currentTarget;
+			if (index < maxIndex) {
+				if (index > 0) {
+					double distanceToPrev = distance(currentLocation, pathNodes[index - 1]);
+					double distanceToCurrent = distance(currentLocation, pathNodes[index]);
+					double distanceToNext = distance(currentLocation, pathNodes[index + 1]);
+					System.out.println("distanceToPrev:" + distanceToPrev);
+					System.out.println("distanceToCurrent:" + distanceToCurrent);
+					System.out.println("distanceToNext:" + distanceToNext);
+					if (distanceToNext < distanceToCurrent || minDistance < 0.3) {
+						index++;
+						minDistance = 1000000000000000.0;
+					} else if (distanceToPrev < distanceToCurrent && distanceToCurrent > 5.0) {
+						index--;
+						minDistance = 10000000000.0;
+					}
+					currentTarget = pathNodes[index];
+					if (index < maxIndex) {
+						nextTarget = pathNodes[index + 1];
+					} else {
+						nextTarget = pathNodes[index];
+					}
+				} else {
+					double distanceToCurrent = distance(currentLocation, pathNodes[index]);
+					double distanceToNext = distance(currentLocation, pathNodes[index + 1]);
+					System.out.println("distanceToCurrent:" + distanceToCurrent);
+					System.out.println("distanceToNext:" + distanceToNext);
+					if (distanceToNext < distanceToCurrent || minDistance < 0.3) {
+						index++;
+						minDistance = 10000000.0;
+					}
+					currentTarget = pathNodes[index];
+					if (index < maxIndex) {
+						nextTarget = pathNodes[index + 1];
+					} else {
+						nextTarget = pathNodes[index];
+					}
 				}
+			} else {
+				nextTarget = pathNodes[index];
 				currentTarget = pathNodes[index];
-				if(index < maxIndex){
-					nextTarget = pathNodes[index +1];
-				}else{
-					nextTarget = pathNodes[index];
-				}
-			}else{
-				double distanceToCurrent = distance(currentLocation, pathNodes[index]);
-				double distanceToNext = distance(currentLocation, pathNodes[index + 1]);
-				System.out.println("distanceToCurrent:" + distanceToCurrent);
-				System.out.println("distanceToNext:" + distanceToNext);
-				if(distanceToNext < distanceToCurrent || minDistance < 0.3){
-					index++;
-					minDistance = 10000000.0;
-				}
-				currentTarget = pathNodes[index];
-				if(index < maxIndex){
-					nextTarget = pathNodes[index +1];
-				}else{
-					nextTarget = pathNodes[index];
+			}
+			double power;
+			double distance_ = distance(currentLocation, currentTarget);
+			if (minDistance > distance_)
+				minDistance = distance_;
+			double nextDistance = distance(currentLocation, nextTarget);
+			double heading_ = getHeading(currentLocation, currentTarget);
+			double nextHeading = getHeading(currentLocation, nextTarget);
+			double lemNot = Math.tanh(nextDistance - distance_) + 1.0;
+			if (maxIndex - index < 20) {
+				power = MathUtil.clamp(Math.tanh(lemNot * distance_), 0.2, 0.4);
+			} else if (maxIndex - index < 10) {
+				power = MathUtil.clamp(Math.tanh(lemNot * distance_), 0.1, 0.3);
+			} else {
+				power = MathUtil.clamp(Math.tanh(lemNot * distance_), 0.4, 0.7);
+			}
+			double updatedHeading = (7.0 * heading_ + nextHeading) / 8.0;
+			System.out.println("HeadingToCurrent:" + heading_);
+			System.out.println("HeadingToNext:" + nextHeading);
+			//		updatedHeading = heading_;
+			//		if(nextDistance > 2.0){
+			//			updatedHeading = heading_ + ((distance_/(nextDistance*3.0))*nextHeading);
+			//		}else{
+			//			updatedHeading = nextHeading;
+			//		}
+			double angleDelta = heading_ - RobotMap.continuousGyro.getAngle();
+//			if (RobotMap.preferences.getBoolean("h0P7B", false))
+//				angleDelta *= -1.0;
+					if(Math.abs(angleDelta) > 3.0 ){
+			double range = RobotMap.preferences.getDouble("k7u4Q", 15.0) * Math.exp(Math.tanh(angleDelta));
+			if(previosHeadingDelta != null){
+				if(Math.abs(previosHeadingDelta - angleDelta) > 4.0){
+					range = 1.0;
 				}
 			}
-		}else{
-			nextTarget = pathNodes[index];
-			currentTarget = pathNodes[index];
+			double normalizedDelta = MathUtil.clamp(angleDelta, -range, range);
+			previosHeadingDelta = angleDelta;
+			Robot.drive.driveOnHeading(power, RobotMap.continuousGyro.getAngle() + normalizedDelta);
+					}else{
+						Robot.drive.driveOnHeadingLazy(power, updatedHeading);
+					}
+			if (minDistance > 25.0 && Math.abs(angleDelta) > 20.0) {
+//				index--;
+				System.out.println("\n\n\n\nRecalulating Path\n\n\n\n");
+//				previosHeadingDelta = null;
+//				initialize();
+//				end();
+				new CommandGroup(){{
+//					addSequential(new PathFollowTwo(endingLocation, headingAtEnd));
+				}}.start();
+//				end();
+			}
 		}
-		double power;
-		double distance_ = distance(currentLocation,currentTarget);
-		if(minDistance > distance_)
-			minDistance = distance_;
-		double nextDistance = distance(currentLocation,nextTarget);
-		double heading_ = getHeading(currentLocation, currentTarget);
-		double nextHeading = getHeading(currentLocation, nextTarget);
-		double lemNot = Math.tanh(nextDistance-distance_)+1.0;
-		if(maxIndex - index < 20){
-			power = MathUtil.clamp(Math.tanh(lemNot*distance_), 0.2, 0.4);
-		}else if(maxIndex - index < 10){
-			power = MathUtil.clamp(Math.tanh(lemNot*distance_), 0.1, 0.3);
-		}else{
-			power = MathUtil.clamp(Math.tanh(lemNot*distance_), 0.4, 0.7);
-		}
-		double updatedHeading; // =(7.0*heading_ + nextHeading)/8.0;
-		updatedHeading = heading_;
-//		if(nextDistance > 2.0){
-//			updatedHeading = heading_ + ((distance_/(nextDistance*3.0))*nextHeading);
-//		}else{
-//			updatedHeading = nextHeading;
+//		else{
+//			Robot.drive.driveOnHeading(0.15, RobotMap.continuousGyro.getAngle());
 //		}
-		double angleDelta = Math.abs(RobotMap.continuousGyro.getAngle() - heading_);
-		if(angleDelta > 3.0 ){
-			double normalizedDelta = MathUtil.clamp(heading_-RobotMap.continuousGyro.getAngle(), -5.0, 5.0);
-			Robot.drive.driveOnHeading(power,RobotMap.continuousGyro.getAngle() + normalizedDelta);
-		}else{
-			Robot.drive.driveOnHeadingLazy(power, updatedHeading);
-		}
 	}
 	
 	@Override
 	protected boolean isFinished() {
-		System.out.println(index);
-		System.out.println("minDistance:" + minDistance);
-		Point2D currentLocation = new Point2D(Robot.positionTracker.getX(),Robot.positionTracker.getY());
-		Point2D currentTarget = pathNodes[index];
-		double distance_ = distance(currentLocation,currentTarget);
-		boolean conOne = minDistance < 0.7 || distance_ < 7.0 ;
-		return index == maxIndex; //conOne && index == maxIndex;
+		if (index < pathNodes.length) {
+			System.out.println("minDistance:" + minDistance);
+			Point2D currentLocation = new Point2D(Robot.positionTracker.getX(), Robot.positionTracker.getY());
+			double distance_ = distance(currentLocation, endingLocation);
+			System.out.println("Distance:" + distance_);
+			boolean conOne = minDistance < 0.7 || distance_ < 7.0;
+			System.out.println(index);
+			return conOne && maxIndex - index < 10; //index == maxIndex;
+		}
+		return false;
 	}
 
 	@Override

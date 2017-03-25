@@ -99,21 +99,27 @@ public class FalconPathPlanner
 			throw new Exception("Unsuported number of headings");
 		}
 		double[][] waypoints = doubleArrayCopy(path);
-		double[][] corrected = new double[waypoints.length+2][waypoints[0].length];
+		double[][] corrected = new double[waypoints.length+1 + 10][waypoints[0].length];
 		int l = waypoints.length-1;
 		double displacement = Math.sqrt(((waypoints[0][0]-waypoints[l][0])*(waypoints[0][0]-waypoints[l][0]))+((waypoints[0][1]-waypoints[l][1])*(waypoints[0][1]-waypoints[l][1])));
 		double lambda = Math.tanh(displacement)/10.0;
 		System.out.println("Lambda Value:"+ lambda);
 		double fudge0 = RobotMap.preferences.getDouble("BeginingPathScaleFudgeFactor", 1.0);
 		double fudge1 = RobotMap.preferences.getDouble("EndingPathScaleFudgeFactor", 1.0);
-		double[] lemN = new double[]{waypoints[0][0]+ (lambda*fudge0*displacement*Math.sin(Math.toRadians(headings[0]))),waypoints[0][1]+(lambda*fudge0*displacement*Math.cos(Math.toRadians(headings[0])))};
-		double[] lemO = new double[]{waypoints[l][0]-(lambda*fudge1*displacement*Math.sin(Math.toRadians(headings[1]))),waypoints[l][1]-(lambda*fudge1*displacement*Math.cos(Math.toRadians(headings[1])))};
+		double distancValue = Math.max(displacement*lambda,5.0);
+		double[] lemN = new double[]{waypoints[0][0]+ (fudge0*distancValue*Math.sin(Math.toRadians(headings[0]))),waypoints[0][1]+(fudge0*distancValue*Math.cos(Math.toRadians(headings[0])))};
+		double[][] lemO = new double[10][2]; //new double[]{waypoints[l][0]-(fudge1*distancValue*Math.sin(Math.toRadians(headings[1]))),waypoints[l][1]-(fudge1*distancValue*Math.cos(Math.toRadians(headings[1])))};
+		for(double i = 10.0; i > 0.0;i--){
+			lemO[((int) i) -1] = new double[]{waypoints[l][0]-((i/10.0)*fudge1*distancValue*Math.sin(Math.toRadians(headings[1]))),waypoints[l][1]-((i/10.0)*fudge1*distancValue*Math.cos(Math.toRadians(headings[1])))};
+		}
 		for(int i = 0; i < l+1;i++){
 			if(i == 0){
 				corrected[0] = waypoints[0];
 				corrected[1] = lemN;
 			}else if(i == l){
-				corrected[i + 1] = lemO;
+				for(int k = 1; k <= 10;k++){
+					corrected[i + k] = lemO[k-1];
+				}
 				corrected[i + 2] = waypoints[i];
 			}else{
 				corrected[i+1] = waypoints[i];
