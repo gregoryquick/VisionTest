@@ -21,13 +21,13 @@ public class DriveStraitToFieldPosition extends Command {
 	private double thetaToTargetCurrent;
 	private double xCurrent;
 	private double yCurrent;
-	private double speed;
 	private double distanceToTargetCurrent;
 	private segmentType type;
 	private Timer timekeeper;
+	private double startTime;
 	private double timeToFinish = -1.0;
 
-	enum segmentType{
+	public enum segmentType{
 		START, END, INT, NAT;
 	}
 	public DriveStraitToFieldPosition(Point2D end) {
@@ -37,10 +37,16 @@ public class DriveStraitToFieldPosition extends Command {
 		requires(Robot.drive);
 	}
 	
+	public DriveStraitToFieldPosition(Point2D end, segmentType segment) {
+		xTarget = end.x;
+		yTarget = end.y;
+		type = segment;
+		requires(Robot.drive);
+	}
+	
 	public DriveStraitToFieldPosition(Point2D end,segmentType segment, double power, double time) {
 		xTarget = end.x;
 		yTarget = end.y;
-		speed = power;
 		type = segment;
 		timeToFinish = time;
 		requires(Robot.drive);
@@ -57,10 +63,10 @@ public class DriveStraitToFieldPosition extends Command {
 
 	// Called just before this Command runs the first time
 	protected void initialize() {
-		if(type.equals(segmentType.NAT) || type.equals(segmentType.START));
-			Robot.drive.driveOnHeadingInit(RobotMap.continuousGyro.getAngle());
+		Robot.drive.driveOnHeadingInit(RobotMap.continuousGyro.getAngle());
 		timekeeper = new Timer();
 		timekeeper.start();
+		startTime = timekeeper.get();
 	}
 
 	// Called repeatedly when this Command is scheduled to run
@@ -75,12 +81,11 @@ public class DriveStraitToFieldPosition extends Command {
 		}
 		double distanceToSlow = RobotMap.preferences.getDouble("SLOW_DOWN_DISTANCE", SLOW_DOWN_DISTANCE);
 		double power;
-		if(type.equals(segmentType.NAT)){
-			 power = MathUtil.clamp(distanceToTargetCurrent / distanceToSlow, 0.15, 1);
+		if(type.equals(segmentType.NAT) || type.equals(segmentType.END)){
+			power = MathUtil.clamp(distanceToTargetCurrent / distanceToSlow, 0.1, 0.5);
 		}else{
-			power = MathUtil.clamp(speed, 0.15, 1);
+			power = MathUtil.clamp(distanceToTargetCurrent / distanceToSlow, 0.5, 0.5);
 		}
-		power = 0.5;
 		Robot.drive.driveOnHeading(power, updatedHeading);
 	}
 
@@ -88,18 +93,29 @@ public class DriveStraitToFieldPosition extends Command {
 	protected boolean isFinished() {
 		// TODO Figure out correct distance
 		System.out.println("" + distanceToTargetCurrent);
-		if(timeToFinish <= 0.0){
+		System.out.println("" + timeToFinish);
+		if(timeToFinish > 0.0){
+			System.out.println("Time Condition");
 			return timekeeper.get() > timeToFinish;
 		}else{
-			return distanceToTargetCurrent < 2.0;
+			System.out.println("Distance Condition");
+			if(type.equals(segmentType.NAT) || type.equals(segmentType.END)){
+				return distanceToTargetCurrent < 1.0;
+			}else{
+				return distanceToTargetCurrent < 5.0;
+			}
 		}
 //		return false;
 	}
 
 	// Called once after isFinished returns true
 	protected void end() {
-		if(type.equals(segmentType.NAT) || type.equals(segmentType.END))
+		System.out.println("Ending drive Command");
+		if(type.equals(segmentType.NAT) || type.equals(segmentType.END)){
 			Robot.drive.driveOnHeadingEnd(true);
+		}else{
+			Robot.drive.driveOnHeadingEnd(false);
+		}
 		timekeeper.stop();
 	}
 

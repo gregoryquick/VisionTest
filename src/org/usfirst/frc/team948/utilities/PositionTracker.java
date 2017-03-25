@@ -19,20 +19,20 @@ public class PositionTracker {
 	public void init(double x, double y) {
 		this.x = x;
 		this.y = y;
-		prevLeftEncoder = RobotMap.leftEncoder.get();
-		prevRightEncoder = RobotMap.rightEncoder.get();
+		prevLeftEncoder = Robot.robotMap.leftEncoder.get();
+		prevRightEncoder = Robot.robotMap.rightEncoder.get();
 	}
 
 	public synchronized void updatePosition() {
-		double leftEncoder = RobotMap.leftEncoder.get();
-		double rightEncoder = RobotMap.rightEncoder.get();
+		double leftEncoder = Robot.robotMap.leftEncoder.get();
+		double rightEncoder = Robot.robotMap.rightEncoder.get();
 		double leftDelta = leftEncoder - prevLeftEncoder;
 		double rightDelta = rightEncoder - prevRightEncoder;
-		// double distance = ((Math.abs(leftDelta) > Math.abs(rightDelta)) ?
+//		 double distance = ((Math.abs(leftDelta) > Math.abs(rightDelta)) ?
 		// leftDelta : rightDelta)
 		// / Robot.drive.getTicksPerInch();
 		double distance = (leftDelta + rightDelta) / 2 / Robot.drive.getTicksPerInch();
-		double heading = RobotMap.continuousGyro.getAngle() * Math.PI / 180;
+		double heading = Math.toRadians(RobotMap.continuousGyro.getAngle());
 		x += distance * Math.sin(heading);
 		y += distance * Math.cos(heading);
 		prevLeftEncoder = leftEncoder;
@@ -63,24 +63,27 @@ public class PositionTracker {
 //	}
 
 	public void start() {
+		System.out.println("Started Position Tracker");
 		timer = new Timer();
 		timer.schedule(new TimerTask() {
 
 			@Override
 			public void run() {
+//				System.out.println("This is spam from a timer at " + System.currentTimeMillis());
 				updatePosition();
 			}
 
 		}, 0, 50);
 	}
+	
+	public void stop(){
+		if(timer != null)
+			timer.cancel();
+	}
 
 	@Override
 	public String toString() {
-		int xFeet = (int) (x / 12);
-		int xInches = (int) (x - xFeet * 12);
-		int yFeet = (int) (y / 12);
-		int yInches = (int) (y - yFeet * 12);
-		return xFeet + "'" + xInches + "\" , " + yFeet + "'" + yInches + "\"";
+		return "X cord:" +x + "| Y Cord: " + y;
 
 	}
 

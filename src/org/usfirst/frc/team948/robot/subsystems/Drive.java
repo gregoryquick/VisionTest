@@ -36,7 +36,7 @@ public class Drive extends Subsystem implements PIDOutput {
 	private static final double DRIVE_STRAIGHT_ON_HEADING_D = 0.072;
 	private static final double DRIVE_STRAIGHT_ON_HEADING_F = 0.0;
 
-	private static final double DEFAULT_TICKS_PER_INCH = 224/12.0;
+	private static final double DEFAULT_TICKS_PER_INCH = 19.1063829787;
 	private static final double DEFAULT_DISTANCE_TOLERANCE = 1.0 * DEFAULT_TICKS_PER_INCH;
 
 	private double kp;
@@ -128,13 +128,63 @@ public class Drive extends Subsystem implements PIDOutput {
 		SmartDashboard.putNumber("Right driveOnHeading power", pR);
 		tankDrive(pL, pR);
 	}
+	
+	public void driveOnHeadingLazy(double power, double desiredHeading) {
+		drivePID.setSetpoint(desiredHeading);
+		setAutonomousHeading(desiredHeading);
+		double error = drivePID.getError();
+		double outputRange = MathUtil.clamp(
+				PID_MIN_OUTPUT + (Math.abs(error) / 15.0) * (PID_MAX_OUTPUT - PID_MIN_OUTPUT), 0, PID_MAX_OUTPUT);
+		drivePID.setOutputRange(-outputRange, outputRange);
+
+		double currentPIDOutput = MathUtil.clamp(PIDOutput+kf, -PID_MAX_OUTPUT, PID_MAX_OUTPUT);
+		
+		currentPIDOutput /= 5.0;
+
+		SmartDashboard.putNumber("driveOnHeading PID error", drivePID.getError());
+		SmartDashboard.putNumber("driveOnHeading PID output", currentPIDOutput);
+		SmartDashboard.putNumber("driveOnHeading rawPower", power);
+		SmartDashboard.putNumber("desired heading", desiredHeading);
+
+		double pL = power;
+		double pR = power;
+
+		// go straight but correct with the pidOutput
+		// given the pid output, rotate accordingly
+
+		if (power > 0) { // moving forward
+			if (currentPIDOutput > 0) {
+				// turning to the left because right is too high -> decrease
+				// right
+				pR -= currentPIDOutput;
+			} else {
+				// turning to the right because left is too high-> decrease left
+				pL += currentPIDOutput;
+			}
+		} else { // moving backward
+			if (currentPIDOutput > 0) {
+				// turning to the right because left is too high -> decrease
+				// left
+				pL += currentPIDOutput;
+			} else {
+				// turning to the left because right is too high -> decrease
+				// right
+				pR -= currentPIDOutput;
+			}
+		}
+
+		SmartDashboard.putNumber("Left driveOnHeading power", pL);
+		SmartDashboard.putNumber("Right driveOnHeading power", pR);
+		tankDrive(pL, pR);
+	}
 
 	public void driveOnHeadingEnd(boolean stop) {
 		drivePID.reset();
 		drivePID.free();
 		PIDOutput = 0;
-		if(stop)
+		if(stop){
 			stop();
+		}
 	}
 
 	public void tankDrive(double leftPower, double rightPower) {

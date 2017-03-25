@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class PathFollowOne extends Command {
+public class CompositeDriveStrait5Feet extends Command {
 	//I am aware that the number of chords is actual the number of waypoints minus one
 	private double numOfChords;
 	private final double fakeTime = 5.0;
@@ -26,15 +26,8 @@ public class PathFollowOne extends Command {
 	private final boolean dynamicChordNumber;
 	private final double tempSpeedNumber = 0.7;
 	private double chordTime;
-	public  PathFollowOne(Point2D end,double numberOfWaypoints,double chordTime){
-		numOfChords = numberOfWaypoints;
-		this.chordTime = chordTime;
-		endingLocation = end;
-		dynamicChordNumber = false;
-	}
 	
-	public PathFollowOne(Point2D end){
-		endingLocation = end;
+	public CompositeDriveStrait5Feet(){
 		dynamicChordNumber = true;
 	}
 
@@ -44,6 +37,7 @@ public class PathFollowOne extends Command {
 		startPose[0] = Robot.positionTracker.getX();
 		startPose[1] = Robot.positionTracker.getY();
 		startPose[2] = RobotMap.continuousGyro.getAngle();
+		endingLocation = new Point2D(startPose[0]+ (60.0*Math.sin(Math.toRadians(startPose[2]))),startPose[1] + (60.0*Math.cos(Math.toRadians(startPose[2]))));
 		if(dynamicChordNumber){
 			numOfChords = Math.sqrt(((startPose[0]-endingLocation.x)*(startPose[0]-endingLocation.x)) + ((startPose[1]-endingLocation.y)*(startPose[1]-endingLocation.y)))/2.0;
 			numOfChords = numOfChords <= 1.0 ? 1.0 : numOfChords;
@@ -55,21 +49,9 @@ public class PathFollowOne extends Command {
 		}
 		double[][] waypoints = {
 				{startPose[0],startPose[1]},
-//				{(startPose[0]+endingLocation.x)/2.0,(startPose[1]+endingLocation.y)/2.0},
-				{endingLocation.x,endingLocation.y}
-		};
-		double[] headings = {startPose[2],0.0};
-//		headings[1] = (headings[1]%360.0) -180.0;
-		FalconPathPlanner planner;
-		try {
-			planner = new FalconPathPlanner(waypoints,headings);
-			planner.calculate(fakeTime, fakeTimeStep, whealSeperationInches);
-			pathNodes = planner.smoothPath;
-//			pathNodes = planner.nodeOnlyPath;
-		} catch (Exception e) {
-			end();
-			e.printStackTrace();
-		}
+				{(startPose[0]+endingLocation.x)/2.0,(startPose[1]+endingLocation.y)/2.0},
+				{endingLocation.x,endingLocation.y}};
+		pathNodes = waypoints;
 	}
 
 	@Override
@@ -81,10 +63,13 @@ public class PathFollowOne extends Command {
 				if(i == 0 && i == pathNodes.length -1){
 					type = segmentType.NAT;
 				}else if(i == 0){
+					System.out.println("Making Start segment:" +i);
 					type = segmentType.START;
 				}if(i == pathNodes.length -1){
+					System.out.println("Making End segment:"+ i);
 					type = segmentType.END;
 				}else{
+					System.out.println("Making Int segment:" + i);
 					type = segmentType.INT;
 				}
 				addSequential(new DriveStraitToFieldPosition(lemLocation,type,tempSpeedNumber,-1.0));
